@@ -258,4 +258,4 @@ Next:
 
 ## License
 
-No project license has been selected yet. Add a license before public distribution, and keep dataset licenses separate from the application license.
+This project licensed under MIT License
