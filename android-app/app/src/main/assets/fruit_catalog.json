@@ -1,0 +1,76 @@
+[
+  {
+    "id": "apple",
+    "label": "Apel",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "banana",
+    "label": "Pisang",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "mango",
+    "label": "Mangga",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "orange",
+    "label": "Jeruk",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "papaya",
+    "label": "Pepaya",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "pineapple",
+    "label": "Nanas",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "tomato",
+    "label": "Tomat",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ]
+  },
+  {
+    "id": "avocado",
+    "label": "Alpukat",
+    "stages": [
+      "overripe",
+      "ripe",
+      "unripe"
+    ],
+    "visual_model": false,
+    "question_only": true
+  }
+]

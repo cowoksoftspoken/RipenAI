@@ -1,0 +1,1279 @@
+{
+  "summary": {
+    "endpoint": "https://ripenai-question-worker.dbgaming679.workers.dev/v1/questions",
+    "started_at": "2026-08-22T15:23:43.589Z",
+    "finished_at": "2026-08-22T15:23:54.384Z",
+    "total_cases": 31,
+    "valid_cases": 27,
+    "valid_successes": 27,
+    "valid_contract_failures": 0,
+    "invalid_protocol_successes": 3,
+    "all_successes": 31,
+    "providers": {
+      "groq": 5,
+      "cloudflare": 22
+    },
+    "latency_ms": {
+      "min": 835,
+      "p50": 1334,
+      "p95": 2681,
+      "max": 3433,
+      "mean": 1437
+    },
+    "failures": []
+  },
+  "results": [
+    {
+      "name": "apple-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1648,
+      "provider": "groq",
+      "request_id": "2cdf385a-2da2-492b-bd65-ad69f3debc91",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Bagaimana warna kulit apel?",
+          "options": [
+            "Hijau",
+            "Kuning",
+            "Merah"
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "Seberapa keras kulit apel?",
+          "options": [
+            "Sangat keras",
+            "Keras",
+            "Lembut"
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Apakah ada bercak pada kulit apel?",
+          "options": [
+            "Tidak ada",
+            "Sedikit bercak",
+            "Banyak bercak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 430,
+      "group": "valid"
+    },
+    {
+      "name": "apple-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 2681,
+      "provider": "groq",
+      "request_id": "27656397-a5f0-448f-b42b-3153a73b3aa2",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Bagaimana warna kulit apel?",
+          "options": [
+            "Merah terang",
+            "Merah agak gelap",
+            "Merah tua"
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "Apakah kulit apel terasa keras?",
+          "options": [
+            "Keras",
+            "Sedikit lembut",
+            "Lembut"
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Apakah ada bercak atau memar pada kulit apel?",
+          "options": [
+            "Tidak ada",
+            "Sedikit bercak",
+            "Banyak bercak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 470,
+      "group": "valid"
+    },
+    {
+      "name": "apple-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1078,
+      "provider": "groq",
+      "request_id": "02d2847c-8302-4eec-9f55-ed291d219ec7",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Bagaimana warna kulit apel?",
+          "options": [
+            "Hijau",
+            "Kuning keemasan",
+            "Merah cerah",
+            "Cokelat tua"
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "Seberapa keras kulit apel?",
+          "options": [
+            "Keras",
+            "Sedang",
+            "Lembut"
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Berapa banyak bercak pada kulit apel?",
+          "options": [
+            "Tidak ada",
+            "Sedikit",
+            "Banyak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 442,
+      "group": "valid"
+    },
+    {
+      "name": "banana-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 3433,
+      "provider": "groq",
+      "request_id": "24f3527d-550a-4ceb-92e8-976cd2f2f6b2",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Pisang berwarna apa?",
+          "options": [
+            "Hijau",
+            "Kuning muda",
+            "Kuning matang",
+            "Kuning coklat"
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "Pisang memiliki bercak coklat berapa?",
+          "options": [
+            "Tidak ada",
+            "Sedikit",
+            "Cukup banyak",
+            "Sangat banyak"
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Tangkai pisang terlihat seperti apa?",
+          "options": [
+            "Tegang dan kering",
+            "Tegang dan sedikit basah",
+            "Longgar dan basah",
+            "Longgar dan kering"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 531,
+      "group": "valid"
+    },
+    {
+      "name": "banana-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 835,
+      "provider": "groq",
+      "request_id": "a5d48a62-0145-449e-bae4-81e022b7f8e4",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Bagaimana warna kulit pisang?",
+          "options": [
+            "Kuning pucat",
+            "Kuning cerah",
+            "Kuning keemasan"
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "Apakah ada bercak coklat pada kulit pisang?",
+          "options": [
+            "Tidak ada",
+            "Sedikit",
+            "Banyak"
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Bagaimana aroma pisang?",
+          "options": [
+            "Tidak beraroma",
+            "Aroma ringan",
+            "Aroma kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 461,
+      "group": "valid"
+    },
+    {
+      "name": "banana-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1666,
+      "provider": "cloudflare",
+      "request_id": "8c077c96-dfcc-482e-8208-b6c7d6089fb3",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit pisang ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tebalnya tangkai pisang ini?",
+          "options": [
+            "tebal",
+            "tipis",
+            "tidak ada tangkai"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana bercak pada kulit pisang ini?",
+          "options": [
+            "tidak ada bercak",
+            "bercak coklat",
+            "bercak hitam"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 477,
+      "group": "valid"
+    },
+    {
+      "name": "mango-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1794,
+      "provider": "cloudflare",
+      "request_id": "c3741bbb-d429-410a-966d-a2f5ea589ad4",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit mangga ini?",
+          "options": [
+            "hijau",
+            "kuning",
+            "merah",
+            "ungu"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit mangga ini?",
+          "options": [
+            "lembut",
+            "keras",
+            "lunak",
+            "tebal"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma di tangkai mangga ini?",
+          "options": [
+            "tidak beraroma",
+            "sedikit beraroma",
+            "beraroma kuat",
+            "beraroma sangat kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 485,
+      "group": "valid"
+    },
+    {
+      "name": "mango-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1081,
+      "provider": "cloudflare",
+      "request_id": "878a8bfa-1da8-4a1f-952e-d5bf78fb367b",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit mangga ini?",
+          "options": [
+            "tidak berwarna",
+            "berwarna kuning",
+            "berwarna hijau",
+            "berwarna merah"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit mangga ini?",
+          "options": [
+            "sangat keras",
+            "lembut",
+            "sangat lembut"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Apa aroma di tangkai mangga ini?",
+          "options": [
+            "tidak berbau",
+            "berbau harum",
+            "berbau amis"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 491,
+      "group": "valid"
+    },
+    {
+      "name": "mango-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 919,
+      "provider": "cloudflare",
+      "request_id": "e42f4722-fa67-4a9b-bf45-2e40ba3ebbe0",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit mangga ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit mangga ini?",
+          "options": [
+            "kaku",
+            "lembut",
+            "terlalu lembut"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma di tangkai mangga ini?",
+          "options": [
+            "tidak berbau",
+            "sedikit berbau",
+            "berbau kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 464,
+      "group": "valid"
+    },
+    {
+      "name": "orange-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1489,
+      "provider": "cloudflare",
+      "request_id": "0e0dc418-ef42-4361-aeb6-d6422bf7f07b",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit jeruk ini?",
+          "options": [
+            "hijau",
+            "kuning",
+            "merah",
+            "ungu"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kekencangan kulit jeruk ini?",
+          "options": [
+            "sangat keras",
+            "keras",
+            "lembut",
+            "sangat lembut"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma jeruk ini?",
+          "options": [
+            "tidak beraroma",
+            "sedikit beraroma",
+            "beraroma kuat",
+            "beraroma sangat kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 491,
+      "group": "valid"
+    },
+    {
+      "name": "orange-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1334,
+      "provider": "cloudflare",
+      "request_id": "0722209f-f059-4870-940d-1ffbf3247fc3",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit jeruk ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit jeruk ini?",
+          "options": [
+            "kering",
+            "lembab",
+            "basah"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Berapa berat jeruk ini?",
+          "options": [
+            "tidak ada",
+            "ringan",
+            "berat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 424,
+      "group": "valid"
+    },
+    {
+      "name": "orange-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1570,
+      "provider": "cloudflare",
+      "request_id": "eec51c6f-edab-46e3-970a-9d04f666774f",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit jeruk ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kekencangan kulit jeruk ini?",
+          "options": [
+            "sangat keras",
+            "keras",
+            "lembut"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana banyaknya pori kulit jeruk ini?",
+          "options": [
+            "tidak ada",
+            "sedikit",
+            "banyak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 455,
+      "group": "valid"
+    },
+    {
+      "name": "papaya-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1161,
+      "provider": "cloudflare",
+      "request_id": "ecc48c98-87f5-4bce-8845-4bbb50295c2d",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit pepaya ini?",
+          "options": [
+            "hijau",
+            "kuning",
+            "merah",
+            "ungu"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana keadaan tangkai pepaya ini?",
+          "options": [
+            "tangkai masih tergabung",
+            "tangkai sudah terlepas",
+            "tangkai terlepas tapi masih ada sisa",
+            "tangkai sudah terlepas dan tidak ada sisa"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana tekstur kulit pepaya ini?",
+          "options": [
+            "tebal dan keras",
+            "tebal tapi agak lembut",
+            "tipis dan lembut",
+            "tipis dan keras"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 590,
+      "group": "valid"
+    },
+    {
+      "name": "papaya-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 930,
+      "provider": "cloudflare",
+      "request_id": "c62815eb-ac92-4720-82a3-19f27fd45a50",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit pepaya ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kondisi tangkai pepaya ini?",
+          "options": [
+            "tangkai masih kuat",
+            "tangkai lemah",
+            "tangkai patah"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana kondisi bercak pada pepaya ini?",
+          "options": [
+            "tidak ada bercak",
+            "bercak kecil",
+            "bercak besar"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 493,
+      "group": "valid"
+    },
+    {
+      "name": "papaya-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1021,
+      "provider": "cloudflare",
+      "request_id": "a73eb941-3324-4f77-b189-a0eeb7be3c94",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit pepaya ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kondisi tangkai pepaya ini?",
+          "options": [
+            "tangkai masih kuat",
+            "tangkai lemah",
+            "tangkai putus"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana kondisi bercak pada pepaya ini?",
+          "options": [
+            "tidak ada bercak",
+            "bercak kecil",
+            "bercak besar"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 493,
+      "group": "valid"
+    },
+    {
+      "name": "pineapple-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 985,
+      "provider": "cloudflare",
+      "request_id": "ede9cb52-1ba5-4e36-9202-a9a27ad99b01",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit nanas ini?",
+          "options": [
+            "hijau",
+            "kuning",
+            "ungu",
+            "coklat"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Apa tampilan daun mahkota nanas ini?",
+          "options": [
+            "tua",
+            "muda",
+            "bercabang",
+            "berdaun"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Apa aroma nanas ini?",
+          "options": [
+            "tidak berbau",
+            "berbau lembut",
+            "berbau kuat",
+            "berbau busuk"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 458,
+      "group": "valid"
+    },
+    {
+      "name": "pineapple-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1106,
+      "provider": "cloudflare",
+      "request_id": "55136c15-660d-46df-a1ff-2c9e7add17ed",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit nanas ini?",
+          "options": [
+            "tidak berwarna",
+            "berwarna kuning",
+            "berwarna hijau",
+            "berwarna merah"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana bentuk daun mahkota nanas ini?",
+          "options": [
+            "membengkak",
+            "tidak membengkak",
+            "menggulung",
+            "menggulung ke atas"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Apa aroma nanas ini?",
+          "options": [
+            "tidak berbau",
+            "berbau manis",
+            "berbau asam",
+            "berbau pahit"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 528,
+      "group": "valid"
+    },
+    {
+      "name": "pineapple-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1066,
+      "provider": "cloudflare",
+      "request_id": "63695d82-1d79-4f93-843f-9c66f0ea8b55",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit nanas ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tebalnya daun mahkota nanas ini?",
+          "options": [
+            "tebal",
+            "tipis",
+            "terlalu tipis"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma nanas ini?",
+          "options": [
+            "tidak ada",
+            "ringan",
+            "berat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 444,
+      "group": "valid"
+    },
+    {
+      "name": "tomato-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1040,
+      "provider": "cloudflare",
+      "request_id": "fa849a32-2f7f-4771-a45d-157d35359016",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit tomat ini?",
+          "options": [
+            "unripe",
+            "ripe",
+            "overripe"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit tomat ini?",
+          "options": [
+            "soft",
+            "hard",
+            "very hard"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana keadaan tangkai tomat ini?",
+          "options": [
+            "tangkai masih menempel",
+            "tangkai sudah lepas",
+            "tangkai patah"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 463,
+      "group": "valid"
+    },
+    {
+      "name": "tomato-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1380,
+      "provider": "cloudflare",
+      "request_id": "529df2a9-c82d-44ea-ac10-125db9425528",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit tomat ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kondisi tangkai tomat ini?",
+          "options": [
+            "tangkai masih kuat",
+            "tangkai lemah",
+            "tangkai putus"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Apakah ada retak pada tomat ini?",
+          "options": [
+            "retak kecil",
+            "retak besar",
+            "tidak ada retak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 480,
+      "group": "valid"
+    },
+    {
+      "name": "tomato-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1154,
+      "provider": "cloudflare",
+      "request_id": "a849c023-f4c0-4ce4-8137-41cc25a019a3",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit tomat?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kondisi tangkai tomat?",
+          "options": [
+            "tangkai masih kuat",
+            "tangkai lemah",
+            "tangkai putus"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana kondisi kulit tomat?",
+          "options": [
+            "retak",
+            "tidak retak",
+            "bercak"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 455,
+      "group": "valid"
+    },
+    {
+      "name": "avocado-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1144,
+      "provider": "cloudflare",
+      "request_id": "2c471639-43a6-40b3-b7e0-af5ecee2b1b6",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Apa warna kulit alpukat ini?",
+          "options": [
+            "hijau",
+            "kuning",
+            "ungu",
+            "coklat"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Berapa panjang tangkai alpukat ini?",
+          "options": [
+            "tangkai kecil",
+            "tangkai besar",
+            "tangkai tidak ada",
+            "tangkai tercabut"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana tekstur kulit alpukat ini saat ditekan ringan?",
+          "options": [
+            "lembut",
+            "keras",
+            "lunak",
+            "tebal"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 503,
+      "group": "valid"
+    },
+    {
+      "name": "avocado-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 2191,
+      "provider": "cloudflare",
+      "request_id": "b0e30b49-d63a-4e9b-8d53-715d0d3846bc",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit alpukat ini?",
+          "options": [
+            "tidak berwarna",
+            "berwarna hijau",
+            "berwarna kuning",
+            "berwarna ungu"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana kondisi tangkai alpukat ini?",
+          "options": [
+            "tangkai lemah",
+            "tangkai kuat",
+            "tangkai tidak ada",
+            "tangkai patah"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana tekstur alpukat ini saat ditekan ringan?",
+          "options": [
+            "sulit ditekan",
+            "ringan ditekan",
+            "lembut ditekan",
+            "tidak bisa ditekan"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 575,
+      "group": "valid"
+    },
+    {
+      "name": "avocado-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1494,
+      "provider": "cloudflare",
+      "request_id": "c6acea2f-f3dc-450f-a0e8-dfbe78941db8",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit alpukat ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana tekstur kulit alpukat ini saat ditekan ringan?",
+          "options": [
+            "kaku",
+            "lembut",
+            "tebal"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana tangkai alpukat ini?",
+          "options": [
+            "kering",
+            "lembut",
+            "tebal"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 452,
+      "group": "valid"
+    },
+    {
+      "name": "durian-unripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1706,
+      "provider": "cloudflare",
+      "request_id": "df127b77-007b-4d0a-ac6b-8d9ca7abf704",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana bentuk duri di permukaan buah?",
+          "options": [
+            "tidak ada duri",
+            "ada duri yang kecil",
+            "ada duri yang besar",
+            "tidak ada tangkai"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana aroma buah saat dihirup?",
+          "options": [
+            "tidak ada aroma",
+            "aroma ringan",
+            "aroma kuat",
+            "aroma sangat kuat"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Apa bunyi yang keluar saat buah diketuk ringan?",
+          "options": [
+            "tidak ada bunyi",
+            "bunyi lembut",
+            "bunyi keras",
+            "bunyi sangat keras"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 582,
+      "group": "valid"
+    },
+    {
+      "name": "durian-ripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1506,
+      "provider": "cloudflare",
+      "request_id": "8c56e3b3-04c5-4814-98be-e3e91a64b799",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit durian ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana warna tangkai durian ini?",
+          "options": [
+            "tangkai masih hijau",
+            "tangkai sudah berwarna kuning",
+            "tangkai sudah berwarna coklat",
+            "tangkai sudah gugur"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma durian ini?",
+          "options": [
+            "tidak ada bau",
+            "bau sedang",
+            "bau kuat",
+            "bau sangat kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 542,
+      "group": "valid"
+    },
+    {
+      "name": "durian-overripe",
+      "expected_status": 200,
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1389,
+      "provider": "cloudflare",
+      "request_id": "6871fa73-d82a-42e5-8268-1d6d4d47658b",
+      "questions": [
+        {
+          "id": "1",
+          "text": "Bagaimana warna kulit durian ini?",
+          "options": [
+            "mentah",
+            "matang",
+            "terlalu matang"
+          ]
+        },
+        {
+          "id": "2",
+          "text": "Bagaimana warna tangkai durian ini?",
+          "options": [
+            "tangkai masih hijau",
+            "tangkai sudah berwarna coklat",
+            "tangkai sudah berwarna kuning"
+          ]
+        },
+        {
+          "id": "3",
+          "text": "Bagaimana aroma durian ini?",
+          "options": [
+            "tidak ada bau",
+            "bau sedikit",
+            "bau kuat"
+          ]
+        }
+      ],
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 503,
+      "group": "valid"
+    },
+    {
+      "name": "missing-fruit",
+      "expected_status": 400,
+      "status": 400,
+      "ok": true,
+      "latency_ms": 41,
+      "provider": null,
+      "request_id": null,
+      "questions": null,
+      "contract_errors": [],
+      "error": "invalid_fruit_type",
+      "providers": null,
+      "response_bytes": 30,
+      "group": "invalid"
+    },
+    {
+      "name": "invalid-fruit",
+      "expected_status": 400,
+      "status": 400,
+      "ok": true,
+      "latency_ms": 75,
+      "provider": null,
+      "request_id": null,
+      "questions": null,
+      "contract_errors": [],
+      "error": "invalid_fruit_type",
+      "providers": null,
+      "response_bytes": 30,
+      "group": "invalid"
+    },
+    {
+      "name": "too-large",
+      "expected_status": 413,
+      "status": 413,
+      "ok": true,
+      "latency_ms": 40,
+      "provider": null,
+      "request_id": null,
+      "questions": null,
+      "contract_errors": [],
+      "error": "payload_too_large",
+      "providers": null,
+      "response_bytes": 29,
+      "group": "invalid"
+    },
+    {
+      "name": "cors-options",
+      "group": "protocol",
+      "expected_status": 204,
+      "status": 204,
+      "ok": true,
+      "latency_ms": null,
+      "provider": null,
+      "request_id": null,
+      "questions": null,
+      "contract_errors": [],
+      "error": null,
+      "providers": null,
+      "response_bytes": 0
+    }
+  ]
+}

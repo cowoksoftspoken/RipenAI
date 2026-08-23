@@ -1,0 +1,23 @@
+{
+  "endpoint": "https://ripenai-question-worker.dbgaming679.workers.dev/v1/questions",
+  "started_at": "2026-08-22T15:23:43.589Z",
+  "finished_at": "2026-08-22T15:23:54.384Z",
+  "total_cases": 31,
+  "valid_cases": 27,
+  "valid_successes": 27,
+  "valid_contract_failures": 0,
+  "invalid_protocol_successes": 3,
+  "all_successes": 31,
+  "providers": {
+    "groq": 5,
+    "cloudflare": 22
+  },
+  "latency_ms": {
+    "min": 835,
+    "p50": 1334,
+    "p95": 2681,
+    "max": 3433,
+    "mean": 1437
+  },
+  "failures": []
+}

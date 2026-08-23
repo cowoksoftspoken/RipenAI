@@ -1,0 +1,96 @@
+{
+  "source": "C:\\Users\\DELL-04-SMKKRIAN1\\Documents\\RipenAI\\outputs\\worker_analysis\\worker_stress_results.json",
+  "valid_successes_audited": 27,
+  "cue_coverage": {
+    "pass": 27,
+    "total": 27,
+    "rate": 1
+  },
+  "generic_wording": {
+    "cases": 0,
+    "rate": 0
+  },
+  "english_fruit_wording": {
+    "cases": 0,
+    "rate": 0
+  },
+  "unsafe_wording": {
+    "cases": 0,
+    "rate": 0
+  },
+  "by_fruit": {
+    "apple": {
+      "label": "apel",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "banana": {
+      "label": "pisang",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "mango": {
+      "label": "mangga",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "orange": {
+      "label": "jeruk",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "papaya": {
+      "label": "pepaya",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "pineapple": {
+      "label": "nanas",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "tomato": {
+      "label": "tomat",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "avocado": {
+      "label": "alpukat",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    },
+    "durian": {
+      "label": "durian",
+      "cases": 3,
+      "cue_coverage": 3,
+      "generic_wording": 0,
+      "english_fruit_wording": 0,
+      "unsafe_wording": 0
+    }
+  },
+  "warnings": []
+}

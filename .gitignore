@@ -1,0 +1,84 @@
+# -----------------------------------------------------------------------------
+# RipenAI repository ignore rules
+# -----------------------------------------------------------------------------
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+**/.dev.vars
+**/*.keystore
+**/*.jks
+
+# Operating system, editor, and logs
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+**/.idea/
+.vscode/
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Android / Gradle generated files.
+# `android-app/` is the Android source project; only its generated subfolders
+# are ignored.
+**/.gradle/
+**/.kotlin/
+**/app/build/
+**/app/libs/*.aar
+/android-app/local.properties
+/android-app/captures/
+/android-app/.externalNativeBuild/
+/android-app/.cxx/
+*.iml
+*.apk
+*.aab
+
+# Emulator screenshots and generated visual captures
+/emulator-*.png
+/android-app/emulator-*.png
+
+# Cloudflare / Node generated files
+**/node_modules/
+**/.wrangler/
+**/worker-configuration.d.ts
+
+# Graphify generated indexes and visualizations
+/graphify-out/
+**/graphify-out/
+
+# Temporary download metadata
+/.tmp_kaggle_meta/
+
+# Datasets and processed image splits are reproducible inputs, not source code.
+/data/raw/
+/data/processed/
+/data/raw_external/*
+!/data/raw_external/README.md
+
+# Generated model binaries and experiment outputs.
+# Keep the human-readable validation report and selected charts locally, but do
+# not commit multi-megabyte model/checkpoint/prediction files by accident.
+/outputs/*
+!/outputs/MODEL_VALIDATION_REPORT.md
+!/outputs/model_analysis_native_cuda/
+!/outputs/model_analysis_native_cuda/*.png
+!/outputs/external_analysis_native_cuda/
+!/outputs/external_analysis_native_cuda/*.png
+!/outputs/rotten_detector_analysis/
+!/outputs/rotten_detector_analysis/*.png
+!/outputs/rotten_detector_external_bananaimagebd/
+!/outputs/rotten_detector_external_bananaimagebd/*.png
+!/outputs/model_analysis_native_cuda_4stage_tuned/
+!/outputs/model_analysis_native_cuda_4stage_tuned/*.png
+!/outputs/worker_analysis/
+!/outputs/worker_analysis/*.png

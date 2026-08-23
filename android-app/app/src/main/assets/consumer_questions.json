@@ -1,0 +1,53 @@
+{
+  "banana": [
+    {
+      "id": "tekstur",
+      "text": "Saat ditekan pelan, teksturnya bagaimana?",
+      "options": ["Keras", "Agak lunak", "Lunak"]
+    },
+    {
+      "id": "warna",
+      "text": "Warna kulit pisang paling mendekati?",
+      "options": ["Hijau", "Kuning-hijau", "Kuning penuh"]
+    },
+    {
+      "id": "bercak",
+      "text": "Berapa banyak bercak cokelat di kulitnya?",
+      "options": ["Tidak ada", "Beberapa", "Banyak"]
+    }
+  ],
+  "mango": [
+    {
+      "id": "tekstur",
+      "text": "Saat ditekan pelan, teksturnya bagaimana?",
+      "options": ["Keras", "Agak lunak", "Lunak"]
+    },
+    {
+      "id": "aroma",
+      "text": "Aroma manis mangga tercium?",
+      "options": ["Tidak tercium", "Sedikit", "Harum"]
+    },
+    {
+      "id": "warna",
+      "text": "Warna kulit mangga paling mendekati?",
+      "options": ["Hijau", "Kuning-hijau", "Kuning-oranye"]
+    }
+  ],
+  "tomato": [
+    {
+      "id": "tekstur",
+      "text": "Saat ditekan pelan, teksturnya bagaimana?",
+      "options": ["Keras", "Agak lunak", "Lunak"]
+    },
+    {
+      "id": "warna",
+      "text": "Warna kulit tomat paling mendekati?",
+      "options": ["Hijau", "Oranye", "Merah"]
+    },
+    {
+      "id": "kulit",
+      "text": "Kondisi kulit tomat terlihat seperti apa?",
+      "options": ["Kencang", "Mulai keriput"]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "0": "apple_overripe",
+  "1": "apple_ripe",
+  "2": "apple_unripe",
+  "3": "banana_overripe",
+  "4": "banana_ripe",
+  "5": "banana_unripe",
+  "6": "mango_overripe",
+  "7": "mango_ripe",
+  "8": "mango_unripe",
+  "9": "orange_overripe",
+  "10": "orange_ripe",
+  "11": "orange_unripe",
+  "12": "papaya_overripe",
+  "13": "papaya_ripe",
+  "14": "papaya_unripe",
+  "15": "pineapple_overripe",
+  "16": "pineapple_ripe",
+  "17": "pineapple_unripe",
+  "18": "tomato_overripe",
+  "19": "tomato_ripe",
+  "20": "tomato_unripe"
+}

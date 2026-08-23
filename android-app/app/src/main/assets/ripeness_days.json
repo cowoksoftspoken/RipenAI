@@ -1,0 +1,37 @@
+{
+  "apple": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "banana": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "mango": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "orange": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "papaya": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "pineapple": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  },
+  "tomato": {
+    "overripe": -1,
+    "ripe": 0,
+    "unripe": 5
+  }
+}

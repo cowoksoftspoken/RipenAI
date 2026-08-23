@@ -1,0 +1,38 @@
+{
+  "model": "C:\\Users\\DELL-04-SMKKRIAN1\\Documents\\RipenAI\\outputs\\native_cuda_candidate.tflite",
+  "dataset": "C:\\Users\\DELL-04-SMKKRIAN1\\Documents\\RipenAI\\data\\raw_external\\bananaimagebd\\extracted",
+  "support": 820,
+  "banana_stage_accuracy_after_fruit_selection": 0.925609756097561,
+  "global_non_banana_predictions": 1,
+  "per_stage": {
+    "unripe": {
+      "accuracy": 0.8632075471698113,
+      "support": 212
+    },
+    "ripe": {
+      "accuracy": 0.9555555555555556,
+      "support": 405
+    },
+    "overripe": {
+      "accuracy": 0.9310344827586207,
+      "support": 203
+    }
+  },
+  "confusion": {
+    "unripe": {
+      "unripe": 183,
+      "ripe": 29,
+      "overripe": 0
+    },
+    "ripe": {
+      "unripe": 2,
+      "ripe": 387,
+      "overripe": 16
+    },
+    "overripe": {
+      "unripe": 1,
+      "ripe": 13,
+      "overripe": 189
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "RipenAI",
+  "description": "Offline AI Fruit Ripeness Detection & ESP32 IoT Integration app.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
