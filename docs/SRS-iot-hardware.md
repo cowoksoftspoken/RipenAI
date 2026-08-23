@@ -1,99 +1,88 @@
-# SRS — IoT Hardware (Unit Wadah, Sensor, Rekomendasi & Pengingat)
+# SRS - IoT Hardware (Unit Wadah, Sensor, Recommender & Pengingat)
 
-> Bagian dari Software Requirements Specification RipenAI. Fokus: requirement untuk unit IoT yang ditempel di wadah/keranjang buah, logika rekomendasi & pengingat, dan mekanisme sinkronisasi langsung ke aplikasi (Mode Petani).
-> Requirement UI Mode Petani ada di `SRS-mobile-app.md`. Spesifikasi firmware & BOM ada di `TECH-iot-firmware.md`.
+> Requirement untuk unit IoT pada wadah buah, logika rekomendasi, pengingat, dan sinkronisasi lokal ke aplikasi Mode Petani. Spesifikasi UI ada di `SRS-mobile-app.md`; firmware dan BOM ada di `TECH-iot-firmware.md`.
 
 ---
 
 ## 1. Ruang Lingkup
 
-Dokumen ini mencakup requirement untuk:
-- Unit IoT tunggal per wadah/keranjang (sensor + WiFi AP lokal, tanpa gateway/LoRa terpisah).
-- Logika rekomendasi (recommender) dan pengingat (reminder) berbasis tren sensor.
-- Protokol sinkronisasi langsung unit IoT ↔ HP.
-- Definisi threshold rekomendasi rule-based.
+Dokumen ini mencakup satu unit IoT per wadah/keranjang: DHT22, MQ-3, LED RGB, ESP32 WiFi AP lokal, histori sensor, analisis risiko, dan pengingat. Unit tidak membutuhkan internet atau gateway agar dapat melayani aplikasi.
 
----
-
-## 2. Peran & Prinsip Desain
+## 2. Prinsip Desain
 
 | Prinsip | Penjelasan |
 |---|---|
-| Scope per-wadah, bukan per-kebun | Setiap unit IoT memantau kondisi lingkungan **di dalam/sekitar satu wadah/keranjang** hasil panen, bukan area kebun yang luas. |
-| 1 unit = sensor + server, tanpa gateway terpisah | Unit IoT (ESP32) berfungsi ganda: membaca sensor DAN memancarkan WiFi Access Point lokal agar HP bisa connect langsung. Tidak ada perangkat "gateway" terpisah, dan tidak dibutuhkan LoRa karena jarak HP↔wadah selalu dekat (petani harus fisik dekat wadah). |
-| AI sebagai rekomender & pengingat | Peran AI di mode ini BUKAN mengklasifikasi kematangan buah individual (itu tugas CV di Mode Konsumen), melainkan membaca **tren kondisi wadah dari waktu ke waktu** dan menerjemahkannya menjadi rekomendasi aksi + pengingat. |
-| Multi-wadah = multi-unit independen | Skala ke banyak wadah dilakukan dengan menambah unit IoT baru per wadah (masing-masing WiFi AP sendiri), bukan dengan menambah kompleksitas jaringan. |
+| Scope per wadah | Setiap unit memantau kondisi lingkungan di dalam/sekitar satu wadah, bukan area kebun luas. |
+| 1 unit = sensor + server | ESP32 membaca sensor dan menyediakan WiFi AP agar ponsel terhubung langsung. |
+| AI sebagai sinyal bantu | Farmer ML V1 membaca tren sensor; rule engine tetap menjadi pengaman utama dan hasilnya transparan. |
+| Multi-wadah independen | Banyak wadah dilayani dengan menambah unit IoT; setiap unit memiliki identitas WiFi sendiri. |
 
----
-
-## 3. Requirement Fungsional — Unit IoT (Sensor)
+## 3. Requirement Fungsional - Sensor dan Unit
 
 | ID | Requirement | Prioritas |
 |---|---|---|
-| FR-N01 | Unit HARUS membaca suhu & kelembapan udara di sekitar wadah secara berkala (interval disarankan 15-30 menit untuk hemat baterai) menggunakan sensor DHT22 | Wajib |
-| FR-N02 | Unit HARUS membaca level gas hasil proses pematangan/fermentasi buah secara berkala menggunakan sensor MQ-3 pada interval yang sama | Wajib |
-| FR-N03 | Unit HARUS menampilkan status ringkas secara visual langsung di alat menggunakan LED RGB (misal hijau = aman, kuning = perhatian, merah = segera gunakan/jual) tanpa perlu membuka aplikasi | Wajib |
-| FR-N04 | Unit HARUS menyimpan histori pembacaan sensor secara lokal (buffer internal) sampai berhasil disinkronkan ke aplikasi | Wajib |
-| FR-N05 | Unit HARUS menyertakan timestamp (atau sequence number bila RTC tidak tersedia) pada setiap data yang disimpan | Wajib |
-| FR-N06 | Unit HARUS dirancang untuk operasi baterai (power bank/18650) dengan estimasi daya tahan minimal mencukupi durasi pengujian/demo (disarankan ≥3-5 hari kontinu) | Wajib |
-| FR-N07 | Unit HARUS ditempatkan dalam casing yang aman digunakan berdekatan dengan buah (tidak mencemari, tahan kelembapan) | Wajib |
+| FR-N01 | Unit membaca suhu dan kelembapan berkala menggunakan DHT22; interval default 15-30 menit. | Wajib |
+| FR-N02 | Unit membaca level gas proxy hasil pematangan/fermentasi menggunakan MQ-3 pada interval yang sama. | Wajib |
+| FR-N03 | Unit menampilkan status ringkas melalui LED RGB: hijau aman, kuning perhatian, merah segera diperiksa. | Wajib |
+| FR-N04 | Unit menyimpan histori pembacaan secara lokal sampai berhasil disinkronkan ke aplikasi. | Wajib |
+| FR-N05 | Setiap pembacaan memiliki timestamp atau sequence number. | Wajib |
+| FR-N06 | Unit mendukung operasi baterai/power bank yang cukup untuk pengujian dan demo minimal 3-5 hari. | Wajib |
+| FR-N07 | Casing aman diletakkan dekat buah, tidak mencemari, dan terlindung dari kelembapan langsung. | Wajib |
 
----
-
-## 4. Requirement Fungsional — WiFi Access Point Lokal & Sinkronisasi
+## 4. Requirement - WiFi AP dan Sinkronisasi
 
 | ID | Requirement | Prioritas |
 |---|---|---|
-| FR-AP01 | Unit HARUS memancarkan WiFi Access Point lokal dengan SSID yang dapat diidentifikasi unik per wadah (misal `RipenAI-Wadah-01`) | Wajib |
-| FR-AP02 | Unit HARUS menyediakan endpoint/protokol sederhana agar aplikasi HP dapat menarik (pull) seluruh data baru sejak sinkronisasi terakhir | Wajib |
-| FR-AP03 | Unit TIDAK BOLEH memerlukan koneksi internet untuk melayani permintaan data dari aplikasi HP | Wajib |
-| FR-AP04 | Unit BOLEH melakukan sinkronisasi ke server cloud sebagai backup HANYA JIKA tersedia WiFi/internet di lokasi unit (opsional, tidak menjadi syarat fungsi utama) | Opsional |
-| FR-AP05 | Jangkauan WiFi AP unit HARUS cukup untuk digunakan pada jarak wajar di sekitar wadah (beberapa meter), TIDAK memerlukan jangkauan jarak jauh seperti LoRa karena penggunaannya memang mengharuskan petani berada dekat wadah | Wajib |
+| FR-AP01 | Unit memancarkan WiFi AP dengan SSID unik per wadah, misalnya `RipenAI-Wadah-01`. | Wajib |
+| FR-AP02 | Unit menyediakan endpoint untuk menarik data baru sejak timestamp sinkronisasi terakhir. | Wajib |
+| FR-AP03 | Unit tidak memerlukan internet untuk melayani permintaan data dari aplikasi. | Wajib |
+| FR-AP04 | Backup cloud boleh dilakukan jika internet tersedia, tetapi bukan syarat fungsi utama. | Opsional |
+| FR-AP05 | Jangkauan WiFi cukup untuk jarak wajar beberapa meter di sekitar wadah. | Wajib |
 
----
+## 5. Requirement - Logika Recommender Farmer ML V1
 
-## 5. Requirement — Logika Rekomendasi (Recommender)
-
-### 5.1 v1 — Rule-Based (Wajib, tanpa training tambahan)
+### 5.1 Rule engine sebagai safety path
 
 | ID | Requirement | Prioritas |
 |---|---|---|
-| FR-REC01 | Sistem HARUS menghitung skor risiko/kematangan-lanjutan wadah berdasarkan kombinasi tren suhu, kelembapan, dan level gas MQ-3 dari waktu ke waktu (bukan hanya nilai sesaat) | Wajib |
-| FR-REC02 | Sistem HARUS memetakan skor risiko ke rekomendasi aksi yang jelas dan dapat ditindaklanjuti, contoh: "gunakan/jual dalam ±N hari", "segera periksa & pisahkan buah yang terlalu matang" | Wajib |
-| FR-REC03 | Seluruh ambang (threshold) yang dipakai dalam perhitungan skor risiko HARUS dapat dikonfigurasi per jenis buah (laju kenaikan gas yang wajar berbeda antar komoditas) | Wajib |
-| FR-REC04 | Sistem TIDAK BOLEH mengklaim rekomendasi v1 sebagai hasil machine learning prediktif — ini murni threshold rule-based dan harus dikomunikasikan demikian di dokumentasi maupun UI | Wajib |
+| FR-REC01 | Sistem menghitung skor risiko berdasarkan tren suhu, kelembapan, dan gas MQ-3, bukan nilai sesaat saja. | Wajib |
+| FR-REC02 | Sistem memetakan skor ke rekomendasi aksi yang jelas, seperti gunakan/jual, periksa, atau pisahkan buah. | Wajib |
+| FR-REC03 | Threshold risiko dapat dikonfigurasi per jenis buah. | Wajib |
+| FR-REC04 | Rule engine tetap menjadi pengaman utama; Farmer ML V1 hanya sinyal bantu dan tidak boleh menutupi hasil rule yang lebih berisiko. | Wajib |
 
-### 5.2 v2 — Data-Driven (Roadmap, opsional untuk v1)
-
-| ID | Requirement | Prioritas |
-|---|---|---|
-| FR-REC05 | Sistem BOLEH mengumpulkan data time-series (suhu, kelembapan, gas, dan hasil verifikasi manual kondisi buah) selama penggunaan/pengujian sebagai calon dataset training | Opsional |
-| FR-REC06 | JIKA data historis mencukupi (multi-wadah, multi-musim), sistem BOLEH melatih model ringan untuk memprediksi sisa waktu layak-jual/pakai secara lebih akurat dibanding rule-based | Roadmap v2 |
-
----
-
-## 6. Requirement — Pengingat (Reminder)
+### 5.2 Farmer ML V1 dan pembelajaran lokal
 
 | ID | Requirement | Prioritas |
 |---|---|---|
-| FR-REM01 | Sistem HARUS mengirim pengingat (notifikasi lokal di aplikasi) saat skor risiko wadah naik melewati ambang tertentu | Wajib |
-| FR-REM02 | Sistem HARUS mengirim pengingat saat sebuah wadah belum disinkronkan dalam durasi tertentu (misal >24 jam), agar petani tidak lupa mengeceknya | Disarankan |
-| FR-REM03 | Pengingat HARUS menyertakan alasan singkat (bukan notifikasi kosong), contoh: "Wadah 2: level gas naik cepat 6 jam terakhir, segera cek" | Wajib |
+| FR-REC05 | Aplikasi memuat model TFLite Farmer ML V1 dengan input 105 fitur (window 32 x 3 sensor + one-hot buah). | Wajib |
+| FR-REC06 | Model dilatih memakai trajektori sensor sintetis yang mencakup variasi normal, drift, noise, missing reading, stuck sensor, dan out-of-distribution stress. | Wajib |
+| FR-REC07 | Aplikasi menampilkan risk score, confidence, status, dan estimasi jam tindakan dari model bila confidence memenuhi floor. | Wajib |
+| FR-REC08 | Pengguna dapat memberi label eksplisit Aman, Perhatian, atau Urgent setelah memeriksa kondisi nyata buah. | Wajib |
+| FR-REC09 | Label hanya memperbarui kalibrasi lokal per jenis buah dengan learning rate menurun dan batas bias; bobot TFLite tetap frozen. | Wajib |
+| FR-REC10 | Model, rule engine, feedback, dan sumber analisis harus terlihat transparan di UI agar hasil tidak dipresentasikan sebagai kepastian. | Wajib |
+| FR-REC11 | Dataset, konfigurasi fitur, metrik holdout/OOD, dan batasan MQ-3 harus diaudit di `TECH-farmer-ml-v1.md`. | Wajib |
 
----
+## 6. Requirement - Pengingat
 
-## 7. Requirement Non-Fungsional
+| ID | Requirement | Prioritas |
+|---|---|---|
+| FR-REM01 | Aplikasi mengirim pengingat lokal saat skor risiko melewati threshold. | Wajib |
+| FR-REM02 | Aplikasi mengingatkan saat wadah belum disinkronkan, misalnya lebih dari 24 jam. | Disarankan |
+| FR-REM03 | Pengingat menyertakan alasan singkat, misalnya gas meningkat cepat atau kelembapan tinggi. | Wajib |
+
+## 7. Non-Fungsional dan Batasan
 
 | ID | Requirement |
 |---|---|
-| NFR-IOT01 | Seluruh komunikasi unit IoT ↔ HP TIDAK BOLEH memerlukan internet aktif untuk berfungsi |
-| NFR-IOT02 | Total biaya komponen (BOM) untuk 1 unit IoT prototype HARUS berada di kisaran Rp 150.000–220.000 |
-| NFR-IOT03 | Seluruh bobot/threshold rekomendasi (FR-REC01-03) HARUS disimpan sebagai konfigurasi terpisah, bukan hardcoded, agar mudah disesuaikan per jenis buah |
-
----
+| NFR-IOT01 | Komunikasi unit IoT ke ponsel tidak memerlukan internet aktif. |
+| NFR-IOT02 | BOM prototype berada di kisaran Rp150.000-220.000 jika memungkinkan. |
+| NFR-IOT03 | Threshold dan konfigurasi model tersimpan sebagai asset/config terpisah, bukan hardcoded di UI. |
+| NFR-IOT04 | MQ-3 diperlakukan sebagai gas proxy; angka tidak boleh diklaim sebagai ppm tanpa kalibrasi laboratorium. |
+| NFR-IOT05 | Metrik sintetis tidak boleh dianggap sebagai akurasi lapangan; validasi dengan label nyata tetap wajib. |
 
 ## 8. Referensi Silang
 
-- Spesifikasi BOM lengkap, pinout, dan firmware detail → `TECH-iot-firmware.md`
-- Diagram alur data & topologi sederhana → `DESIGN-architecture.md`
-- Alur UI dashboard, rekomendasi, dan pengingat di aplikasi → `SRS-mobile-app.md`
+- Model, dataset, evaluasi, dan kalibrasi: `TECH-farmer-ml-v1.md`
+- Pinout dan firmware ESP32: `TECH-iot-firmware.md` dan `firmware/esp32_ripenai/README.md`
+- Arsitektur dan alur data: `DESIGN-architecture.md`
+- Dashboard dan pengingat: `SRS-mobile-app.md`

@@ -1,5 +1,5 @@
 {
-  "dataset_type": "synthetic_sensor_trajectories_v2",
+  "dataset_type": "synthetic_sensor_trajectories_v1",
   "warning": "Synthetic only; no field accuracy claim. Targets include proxy/manual-label noise and require real DHT22/MQ-3 validation.",
   "seed": 20260823,
   "samples": 12000,
@@ -62,7 +62,7 @@
     "ood": 1200
   },
   "model_type": "temporal_conv_multitask",
-  "model_version": "farmer-synthetic-v2-experimental",
+  "model_version": "farmer-synthetic-v1",
   "feature_mean": [
     26.39223861694336,
     63.31612014770508,

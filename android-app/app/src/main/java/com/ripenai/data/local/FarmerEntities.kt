@@ -18,6 +18,7 @@ data class FarmerContainerEntity(
     val latestModelScore: Float? = null,
     val latestModelConfidence: Float? = null,
     val latestHoursToAction: Float? = null,
+    val latestCalibrationSamples: Int = 0,
     val latestAnalysisSource: String = "Rule-based v1",
     val latestStatus: String = "Belum ada data",
     val latestRecommendation: String = "Sinkronkan unit untuk melihat rekomendasi.",

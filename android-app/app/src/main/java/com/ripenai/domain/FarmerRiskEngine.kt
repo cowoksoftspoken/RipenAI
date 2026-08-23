@@ -25,13 +25,14 @@ data class FarmerRiskResult(
     val modelScore: Float? = null,
     val modelConfidence: Float? = null,
     val modelHoursToAction: Float? = null,
+    val modelCalibrationSamples: Int? = null,
     val analysisSource: String = "Rule-based v1"
 )
 
 /**
- * Transparent v1 risk calculation for the farmer mode. It uses recent sensor
- * trends and a bundled configuration. The optional synthetic model is only an
- * assistive signal and cannot replace this rule-based safety path.
+ * Transparent V1 risk calculation for the farmer mode. It uses recent sensor
+ * trends and a bundled configuration. Farmer ML V1 is an assistive signal and
+ * cannot replace this rule-based safety path.
  */
 class FarmerRiskEngine(private val thresholdsByFruit: Map<String, FarmerThresholds>) {
     fun calculate(fruitType: String, input: List<FarmerSensorReadingEntity>): FarmerRiskResult {
@@ -102,11 +103,16 @@ class FarmerRiskEngine(private val thresholdsByFruit: Map<String, FarmerThreshol
             score = combinedScore,
             status = statusFor(combinedScore),
             recommendation = recommendationFor(combinedScore),
-            reasons = ruleResult.reasons + "Model bantu sintetis memperkirakan ${(modelScore * 100).toInt()}% risiko; perlu kalibrasi dengan log sensor nyata.",
+            reasons = ruleResult.reasons + "Farmer ML V1 memperkirakan ${(modelScore * 100).toInt()}% risiko; cocokkan dengan kondisi buah nyata.",
             modelScore = modelScore,
             modelConfidence = prediction.confidence,
             modelHoursToAction = prediction.hoursToAction,
-            analysisSource = "Rule-based v1 + model sintetis eksperimental"
+            modelCalibrationSamples = prediction.calibrationSamples,
+            analysisSource = if (prediction.calibrationSamples > 0) {
+                "Rule-based v1 + Farmer ML V1 + kalibrasi lokal"
+            } else {
+                "Rule-based v1 + Farmer ML V1"
+            }
         )
     }
 

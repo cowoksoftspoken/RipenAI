@@ -2,6 +2,7 @@
 
 Example:
     python scripts/farmer_demo.py --fruit banana --scenario mixed_stress
+    python scripts/farmer_demo.py --host 0.0.0.0 --port 8080
 
 Use --once for a single JSON snapshot. The server contract mirrors the real
 firmware: /ping, /status, /data?since=..., /config, and /led.
@@ -19,7 +20,7 @@ from urllib.parse import parse_qs, urlparse
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_farmer_synthetic_v2 import DT_HOURS, FRUITS, OOD_SCENARIOS, TRAIN_SCENARIOS, simulate_trajectory
+from generate_farmer_synthetic import DT_HOURS, FRUITS, OOD_SCENARIOS, TRAIN_SCENARIOS, simulate_trajectory
 
 
 def make_payload(fruit: str, scenario: str, seed: int) -> tuple[dict, list[dict]]:
@@ -76,7 +77,7 @@ class DemoHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         query = parse_qs(parsed.query)
         if parsed.path == "/ping":
-            self.send_json({"ok": True, "wadah_id": "Wadah-Demo", "firmware": "python-demo-v2"})
+            self.send_json({"ok": True, "wadah_id": "Wadah-Demo", "firmware": "python-demo-v1"})
         elif parsed.path == "/status":
             self.send_json(self.status)
         elif parsed.path == "/data":
@@ -106,6 +107,7 @@ def main() -> None:
     parser.add_argument("--fruit", choices=FRUITS, default="banana")
     parser.add_argument("--scenario", choices=TRAIN_SCENARIOS + OOD_SCENARIOS, default="mixed_stress")
     parser.add_argument("--seed", type=int, default=20260823)
+    parser.add_argument("--host", default="127.0.0.1", help="Alamat bind server; gunakan 0.0.0.0 untuk akses dari HP lewat LAN")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
@@ -115,8 +117,9 @@ def main() -> None:
         return
     DemoHandler.status = status
     DemoHandler.readings = readings
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), DemoHandler)
-    print(f"Demo aktif di http://127.0.0.1:{args.port} | buah={args.fruit} | skenario={args.scenario}")
+    server = ThreadingHTTPServer((args.host, args.port), DemoHandler)
+    display_host = "127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host
+    print(f"Demo aktif di http://{display_host}:{args.port} | bind={args.host} | buah={args.fruit} | skenario={args.scenario}")
     print("Tekan Ctrl+C untuk berhenti.")
     try:
         server.serve_forever()

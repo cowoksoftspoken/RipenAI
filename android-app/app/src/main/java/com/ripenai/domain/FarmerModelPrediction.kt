@@ -5,5 +5,6 @@ data class FarmerModelPrediction(
     val probabilities: List<Float>,
     val confidence: Float,
     val predictedStatus: String,
-    val hoursToAction: Float? = null
+    val hoursToAction: Float? = null,
+    val calibrationSamples: Int = 0
 )

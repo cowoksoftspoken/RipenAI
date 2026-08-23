@@ -11,6 +11,7 @@ import com.ripenai.data.local.FarmerSensorReadingEntity
 import com.ripenai.data.repository.FarmerRepository
 import com.ripenai.data.repository.FarmerSyncResult
 import com.ripenai.domain.FarmerRiskEngine
+import com.ripenai.domain.FarmerFeedbackLabel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -136,7 +137,8 @@ class FarmerViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val id = repository.addContainer(name, fruitType, ipAddress, ssid)
             selectContainer(id)
-            _syncMessage.value = "Wadah ditambahkan. Tekan sinkronkan saat terhubung ke WiFi unit."
+            _syncMessage.value = "Wadah ditambahkan. Memulai sinkronisasi..."
+            syncSelected()
         }
     }
 
@@ -154,6 +156,12 @@ class FarmerViewModel(application: Application) : AndroidViewModel(application) 
             val id = repository.seedDemoContainer(riskEngine)
             selectContainer(id)
             _syncMessage.value = "Data contoh siap. Nilainya dihitung dari tren sensor simulasi."
+        }
+    }
+
+    fun submitFeedback(containerId: Long, label: FarmerFeedbackLabel) {
+        viewModelScope.launch {
+            _syncMessage.value = repository.recordFeedback(containerId, label, riskEngine)
         }
     }
 

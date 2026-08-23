@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -45,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,10 +63,12 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ripenai.data.local.FarmerContainerEntity
 import com.ripenai.data.local.FarmerSensorReadingEntity
+import com.ripenai.domain.FarmerFeedbackLabel
 import com.ripenai.ui.FarmerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -93,29 +97,31 @@ private fun FarmerDashboard(viewModel: FarmerViewModel, onBack: () -> Unit, modi
     val error by viewModel.error.collectAsState()
     var showAddDialog by rememberSaveable { mutableStateOf(false) }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize().background(Color.White),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 36.dp, bottom = 36.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            FarmerHeader("Mode Petani", "Pantau kondisi wadah, satu per satu", onBack, viewModel::syncAll, { showAddDialog = true }, syncing)
+    Column(modifier = modifier.fillMaxSize().background(Color(0xFFF8FAFC)).navigationBarsPadding()) {
+        Surface(modifier = Modifier.fillMaxWidth(), color = Color.White, shadowElevation = 2.dp) {
+            FarmerHeader("Mode Petani", "Pantau kondisi setiap wadah", onBack, viewModel::syncAll, { showAddDialog = true }, syncing)
         }
-        item { LocalSyncCard() }
-        message?.let { item { FeedbackCard(it, false) } }
-        error?.let { item { FeedbackCard(it, true) } }
-        if (containers.isEmpty()) {
-            item { EmptyFarmerState({ showAddDialog = true }, viewModel::createDemoData) }
-        } else {
-            item { Text("Wadah terdaftar", color = FarmerNavy, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
-            items(containers, key = { it.id }) { container ->
-                ContainerSummaryCard(container) { viewModel.selectContainer(container.id) }
-            }
-            item {
-                OutlinedButton(onClick = { showAddDialog = true }, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Tambah wadah lain")
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 36.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            item { LocalSyncCard() }
+            message?.let { item { FeedbackCard(it, false) } }
+            error?.let { item { FeedbackCard(it, true) } }
+            if (containers.isEmpty()) {
+                item { EmptyFarmerState({ showAddDialog = true }, viewModel::createDemoData) }
+            } else {
+                item { Text("Wadah terdaftar", color = FarmerNavy, fontSize = 18.sp, fontWeight = FontWeight.Bold) }
+                items(containers, key = { it.id }) { container ->
+                    ContainerSummaryCard(container) { viewModel.selectContainer(container.id) }
+                }
+                item {
+                    OutlinedButton(onClick = { showAddDialog = true }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Tambah wadah lain")
+                    }
                 }
             }
         }
@@ -128,11 +134,14 @@ private fun FarmerDashboard(viewModel: FarmerViewModel, onBack: () -> Unit, modi
 
 @Composable
 private fun FarmerHeader(title: String, subtitle: String, onBack: () -> Unit, onRefresh: () -> Unit, onAdd: () -> Unit, syncing: Boolean) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 48.dp, end = 8.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         androidx.compose.material3.IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali") }
         Column(modifier = Modifier.weight(1f)) {
             Text(title, color = FarmerNavy, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-            Text(subtitle, color = FarmerMuted, fontSize = 13.sp)
+            Text(subtitle, color = FarmerMuted, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         androidx.compose.material3.IconButton(onClick = onRefresh, enabled = !syncing) {
             if (syncing) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = FarmerGreen)
@@ -161,7 +170,7 @@ private fun EmptyFarmerState(onAdd: () -> Unit, onDemo: () -> Unit) {
         Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(Icons.Default.Sensors, contentDescription = null, tint = FarmerGreen, modifier = Modifier.size(48.dp))
             Text("Belum ada wadah", color = FarmerNavy, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text("Tambahkan alamat unit ESP32. Untuk mencoba dashboard di emulator, gunakan data contoh.", color = FarmerMuted, fontSize = 14.sp)
+            Text("Tambahkan alamat unit ESP32. Untuk melihat alur dashboard tanpa unit, gunakan data contoh.", color = FarmerMuted, fontSize = 14.sp)
             Button(onClick = onAdd, modifier = Modifier.fillMaxWidth()) { Text("Tambah wadah") }
             OutlinedButton(onClick = onDemo, modifier = Modifier.fillMaxWidth()) { Text("Lihat data contoh (demo)") }
         }
@@ -210,9 +219,9 @@ private fun FarmerContainerDetail(viewModel: FarmerViewModel, container: FarmerC
     val message by viewModel.syncMessage.collectAsState()
     val error by viewModel.error.collectAsState()
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-    LazyColumn(modifier = modifier.fillMaxSize().background(Color.White), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 36.dp, bottom = 36.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        item {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier = modifier.fillMaxSize().background(Color(0xFFF8FAFC)).navigationBarsPadding()) {
+        Surface(modifier = Modifier.fillMaxWidth(), color = Color.White, shadowElevation = 2.dp) {
+            Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, top = 48.dp, end = 8.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 androidx.compose.material3.IconButton(onClick = viewModel::backToDashboard) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali") }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(container.name, color = FarmerNavy, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -225,6 +234,11 @@ private fun FarmerContainerDetail(viewModel: FarmerViewModel, container: FarmerC
                 }
             }
         }
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 36.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
         item {
             Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FAFC))) {
                 Row(modifier = Modifier.padding(14.dp), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -245,6 +259,11 @@ private fun FarmerContainerDetail(viewModel: FarmerViewModel, container: FarmerC
         }
         item { RiskCard(container) }
         item {
+            FarmerFeedbackCard(container) { label ->
+                viewModel.submitFeedback(container.id, label)
+            }
+        }
+        item {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("Tren sensor", color = FarmerNavy, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Text("Data tersimpan di perangkat ini; garis dinormalisasi agar tiga sensor mudah dibandingkan.", color = FarmerMuted, fontSize = 12.sp)
@@ -258,9 +277,10 @@ private fun FarmerContainerDetail(viewModel: FarmerViewModel, container: FarmerC
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
                 Icon(Icons.Default.Info, contentDescription = null, tint = FarmerMuted, modifier = Modifier.size(18.dp))
-                Text("Rule engine tetap menjadi pengaman utama. Model AI bantu di perangkat masih eksperimental karena dilatih dari data sintetis; periksa buah secara visual sebelum keputusan jual.", color = FarmerMuted, fontSize = 12.sp)
+                Text("Rule engine tetap menjadi pengaman utama. Farmer ML V1 membantu membaca pola sensor dan dapat dikalibrasi perlahan dari label pemeriksaan nyata di perangkat ini.", color = FarmerMuted, fontSize = 12.sp)
             }
         }
+    }
     }
     if (showDeleteDialog) AlertDialog(
         onDismissRequest = { showDeleteDialog = false },
@@ -295,17 +315,57 @@ private fun RiskCard(container: FarmerContainerEntity) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(if (container.latestStatus == "Aman") Icons.Default.CheckCircle else Icons.Default.WarningAmber, contentDescription = null, tint = color, modifier = Modifier.size(25.dp))
                 Spacer(Modifier.width(9.dp))
-                Text("${container.latestStatus} · ${container.latestAnalysisSource}", color = color, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                Text("${container.latestStatus}", color = color, fontWeight = FontWeight.Bold, fontSize = 17.sp)
             }
             Text(container.latestRiskScore?.let { "Skor risiko: ${(it * 100).toInt()}%" } ?: "Skor risiko belum tersedia", color = FarmerNavy, fontSize = 13.sp)
             container.latestModelScore?.let { score ->
                 val confidence = ((container.latestModelConfidence ?: 0f) * 100).toInt()
-                Text("AI bantu sintetis: ${(score * 100).toInt()}% · keyakinan $confidence%", color = FarmerMuted, fontSize = 12.sp)
+                Text("Farmer ML V1: ${(score * 100).toInt()}% · keyakinan $confidence%", color = FarmerMuted, fontSize = 12.sp)
             }
             container.latestHoursToAction?.let { hours ->
                 Text("Perkiraan tindakan AI: dalam ±${hours.toInt().coerceAtLeast(0)} jam", color = FarmerMuted, fontSize = 12.sp)
             }
+            if (container.latestCalibrationSamples > 0) {
+                Text("Kalibrasi lokal: ${container.latestCalibrationSamples} label ${container.fruitType}", color = FarmerMuted, fontSize = 12.sp)
+            }
             Text(container.latestRecommendation, color = FarmerNavy, fontSize = 14.sp)
+        }
+    }
+}
+
+@Composable
+private fun FarmerFeedbackCard(container: FarmerContainerEntity, onFeedback: (FarmerFeedbackLabel) -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FDF4))
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+            Text("Bantu model belajar dari pemeriksaanmu", color = FarmerNavy, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("Setelah melihat kondisi nyata buah, pilih label yang paling sesuai. Label ini hanya mengubah kalibrasi lokal di ponsel.", color = FarmerMuted, fontSize = 12.sp)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                OutlinedButton(
+                    onClick = { onFeedback(FarmerFeedbackLabel.SAFE) },
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    border = BorderStroke(1.dp, SafeGreen)
+                ) { Text("Aman", color = SafeGreen, fontSize = 11.sp) }
+                OutlinedButton(
+                    onClick = { onFeedback(FarmerFeedbackLabel.ATTENTION) },
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    border = BorderStroke(1.dp, AttentionAmber)
+                ) { Text("Perhatian", color = AttentionAmber, fontSize = 11.sp) }
+                OutlinedButton(
+                    onClick = { onFeedback(FarmerFeedbackLabel.URGENT) },
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    border = BorderStroke(1.dp, UrgentRed)
+                ) { Text("Urgent", color = UrgentRed, fontSize = 11.sp) }
+            }
+            if (container.latestCalibrationSamples > 0) {
+                Text("Pembelajaran lokal aktif untuk ${container.fruitType}: ${container.latestCalibrationSamples} label", color = SafeGreen, fontSize = 11.sp)
+            }
         }
     }
 }
@@ -365,6 +425,7 @@ private fun AddContainerDialog(onDismiss: () -> Unit, onSave: (String, String, S
     var fruit by rememberSaveable { mutableStateOf("Pisang") }
     var ip by rememberSaveable { mutableStateOf("192.168.4.1") }
     var ssid by rememberSaveable { mutableStateOf("") }
+    val isLocalDemo = ip.trim().let { it == "127.0.0.1" || it.startsWith("127.0.0.1:") || it == "localhost" || it.startsWith("localhost:") }
     val fruits = listOf("Pisang", "Mangga", "Apel", "Pepaya", "Jeruk", "Alpukat", "Durian", "Tomat")
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -381,10 +442,15 @@ private fun AddContainerDialog(onDismiss: () -> Unit, onSave: (String, String, S
                 }
                 OutlinedTextField(ip, { ip = it }, label = { Text("Alamat IP unit") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(ssid, { ssid = it }, label = { Text("SSID WiFi unit") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                Text("SSID diperlukan agar aplikasi dapat mencoba terhubung otomatis. IP default unit biasanya 192.168.4.1.", color = FarmerMuted, fontSize = 12.sp)
+                Text(
+                    if (isLocalDemo) "Demo USB: SSID boleh kosong jika port sudah diteruskan dengan adb reverse."
+                    else "SSID opsional. Jika diisi, aplikasi mencoba auto-connect ke unit; IP default ESP32 biasanya 192.168.4.1.",
+                    color = FarmerMuted,
+                    fontSize = 12.sp
+                )
             }
         },
-        confirmButton = { TextButton(onClick = { onSave(name, fruit, ip, ssid) }, enabled = name.isNotBlank() && ip.isNotBlank() && ssid.isNotBlank()) { Text("Simpan") } },
+        confirmButton = { TextButton(onClick = { onSave(name, fruit, ip, ssid) }, enabled = name.isNotBlank() && ip.isNotBlank()) { Text("Simpan") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
     )
 }

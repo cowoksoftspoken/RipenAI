@@ -1,9 +1,15 @@
 {
-  "dataset_type": "synthetic_sensor_trajectories_v2",
+  "dataset_type": "synthetic_sensor_trajectories_v1",
   "warning": "Trained only on difficult synthetic DHT22/MQ-3 proxy trajectories. Do not claim field accuracy before real calibration logs and manual labels.",
-  "model": "C:\\Users\\DELL-04-SMKKRIAN1\\Documents\\RipenAI\\outputs\\farmer_model_v2_tflite\\farmer_risk.tflite",
-  "input_shape": [1, 105],
-  "output_shape": [1, 5],
+  "model": "farmer_risk.tflite",
+  "input_shape": [
+    1,
+    105
+  ],
+  "output_shape": [
+    1,
+    5
+  ],
   "holdout": {
     "risk_mae": 0.1772117018699646,
     "hours_to_action_mae": 17.934045791625977,
@@ -11,9 +17,21 @@
     "class_macro_f1": 0.5693747527640145,
     "urgent_recall": 0.73125,
     "confusion_matrix": [
-      [589, 49, 58],
-      [96, 28, 60],
-      [49, 37, 234]
+      [
+        589,
+        49,
+        58
+      ],
+      [
+        96,
+        28,
+        60
+      ],
+      [
+        49,
+        37,
+        234
+      ]
     ],
     "support": 1200,
     "per_scenario": {
@@ -24,9 +42,21 @@
         "class_macro_f1": 0.5111196668399202,
         "urgent_recall": 0.7105263157894737,
         "confusion_matrix": [
-          [74, 6, 8],
-          [13, 1, 9],
-          [6, 5, 27]
+          [
+            74,
+            6,
+            8
+          ],
+          [
+            13,
+            1,
+            9
+          ],
+          [
+            6,
+            5,
+            27
+          ]
         ],
         "support": 149
       },
@@ -37,9 +67,21 @@
         "class_macro_f1": 0.5662881298513839,
         "urgent_recall": 0.7142857142857143,
         "confusion_matrix": [
-          [64, 9, 6],
-          [12, 5, 7],
-          [4, 4, 20]
+          [
+            64,
+            9,
+            6
+          ],
+          [
+            12,
+            5,
+            7
+          ],
+          [
+            4,
+            4,
+            20
+          ]
         ],
         "support": 131
       },
@@ -50,9 +92,21 @@
         "class_macro_f1": 0.5937941285767373,
         "urgent_recall": 0.6730769230769231,
         "confusion_matrix": [
-          [64, 5, 9],
-          [11, 6, 4],
-          [3, 14, 35]
+          [
+            64,
+            5,
+            9
+          ],
+          [
+            11,
+            6,
+            4
+          ],
+          [
+            3,
+            14,
+            35
+          ]
         ],
         "support": 151
       },
@@ -63,9 +117,21 @@
         "class_macro_f1": 0.5764773147681028,
         "urgent_recall": 0.8125,
         "confusion_matrix": [
-          [69, 9, 8],
-          [11, 4, 11],
-          [4, 5, 39]
+          [
+            69,
+            9,
+            8
+          ],
+          [
+            11,
+            4,
+            11
+          ],
+          [
+            4,
+            5,
+            39
+          ]
         ],
         "support": 160
       },
@@ -76,9 +142,21 @@
         "class_macro_f1": 0.6445174973488865,
         "urgent_recall": 0.9722222222222222,
         "confusion_matrix": [
-          [99, 5, 10],
-          [12, 6, 11],
-          [0, 1, 35]
+          [
+            99,
+            5,
+            10
+          ],
+          [
+            12,
+            6,
+            11
+          ],
+          [
+            0,
+            1,
+            35
+          ]
         ],
         "support": 179
       },
@@ -89,9 +167,21 @@
         "class_macro_f1": 0.6212121212121212,
         "urgent_recall": 0.9,
         "confusion_matrix": [
-          [76, 4, 12],
-          [8, 4, 8],
-          [0, 4, 36]
+          [
+            76,
+            4,
+            12
+          ],
+          [
+            8,
+            4,
+            8
+          ],
+          [
+            0,
+            4,
+            36
+          ]
         ],
         "support": 152
       },
@@ -102,9 +192,21 @@
         "class_macro_f1": 0.31809242871189775,
         "urgent_recall": 0.09090909090909091,
         "confusion_matrix": [
-          [89, 1, 0],
-          [20, 0, 0],
-          [27, 3, 3]
+          [
+            89,
+            1,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            27,
+            3,
+            3
+          ]
         ],
         "support": 143
       },
@@ -115,9 +217,21 @@
         "class_macro_f1": 0.5646156715285097,
         "urgent_recall": 0.8666666666666667,
         "confusion_matrix": [
-          [54, 10, 5],
-          [9, 2, 10],
-          [5, 1, 39]
+          [
+            54,
+            10,
+            5
+          ],
+          [
+            9,
+            2,
+            10
+          ],
+          [
+            5,
+            1,
+            39
+          ]
         ],
         "support": 135
       }
@@ -130,9 +244,21 @@
     "class_macro_f1": 0.5437505668421301,
     "urgent_recall": 0.4762979683972912,
     "confusion_matrix": [
-      [510, 59, 9],
-      [107, 48, 24],
-      [107, 125, 211]
+      [
+        510,
+        59,
+        9
+      ],
+      [
+        107,
+        48,
+        24
+      ],
+      [
+        107,
+        125,
+        211
+      ]
     ],
     "support": 1200,
     "per_scenario": {
@@ -143,9 +269,21 @@
         "class_macro_f1": 0.5437505668421301,
         "urgent_recall": 0.4762979683972912,
         "confusion_matrix": [
-          [510, 59, 9],
-          [107, 48, 24],
-          [107, 125, 211]
+          [
+            510,
+            59,
+            9
+          ],
+          [
+            107,
+            48,
+            24
+          ],
+          [
+            107,
+            125,
+            211
+          ]
         ],
         "support": 1200
       }

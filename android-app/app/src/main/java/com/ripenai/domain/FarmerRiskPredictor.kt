@@ -12,8 +12,8 @@ import java.nio.channels.FileChannel
 import kotlin.math.max
 
 /**
- * Optional on-device assistive model. It returns null for missing assets or
- * insufficient input so the transparent rule engine remains the fallback.
+ * Farmer ML V1 on-device predictor. It returns null for missing assets or
+ * insufficient input so the transparent rule engine remains the safety fallback.
  */
 class FarmerRiskPredictor(private val context: Context) : AutoCloseable {
     private var interpreter: Interpreter? = null

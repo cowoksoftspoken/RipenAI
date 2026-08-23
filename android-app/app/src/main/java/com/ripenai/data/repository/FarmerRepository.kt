@@ -9,6 +9,8 @@ import com.ripenai.data.remote.SensorReadingResponse
 import com.ripenai.data.remote.SensorStatusResponse
 import com.ripenai.data.wifi.FarmerWifiConnector
 import com.ripenai.domain.FarmerRiskEngine
+import com.ripenai.domain.FarmerFeedbackLabel
+import com.ripenai.domain.FarmerOnlineCalibrator
 import com.ripenai.domain.FarmerRiskPredictor
 import com.ripenai.domain.FarmerRiskResult
 import com.squareup.moshi.Moshi
@@ -32,6 +34,7 @@ class FarmerRepository(context: Context) {
     private val dao = database.farmerDao()
     private val wifiConnector = FarmerWifiConnector(context)
     private val modelPredictor = FarmerRiskPredictor(context)
+    private val onlineCalibrator = FarmerOnlineCalibrator(context)
     private val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
     private val services = mutableMapOf<String, Esp32Service>()
 
@@ -74,7 +77,7 @@ class FarmerRepository(context: Context) {
                 if (freshReadings.isNotEmpty()) dao.insertReadings(freshReadings)
                 val allRecent = dao.getRecentReadings(containerId).asReversed()
                 val ruleRisk = riskEngine.calculate(container.fruitType, allRecent)
-                val risk = riskEngine.mergeModel(ruleRisk, modelPredictor.predict(container.fruitType, allRecent))
+                val risk = riskEngine.mergeModel(ruleRisk, calibratedPrediction(container.fruitType, allRecent))
                 val newest = freshReadings.maxByOrNull { it.timestamp }
                     ?: allRecent.maxByOrNull { it.timestamp }
                 val latestTimestamp = newest?.timestamp ?: status.timestamp.takeIf { it > 0L } ?: container.lastReadingTimestamp
@@ -89,6 +92,7 @@ class FarmerRepository(context: Context) {
                         latestModelScore = risk.modelScore,
                         latestModelConfidence = risk.modelConfidence,
                         latestHoursToAction = risk.modelHoursToAction,
+                        latestCalibrationSamples = risk.modelCalibrationSamples ?: onlineCalibrator.sampleCount(container.fruitType),
                         latestAnalysisSource = risk.analysisSource,
                         latestStatus = risk.status,
                         latestRecommendation = risk.recommendation,
@@ -119,7 +123,7 @@ class FarmerRepository(context: Context) {
         dao.insertReadings(readings)
         val latest = readings.last()
         val ruleRisk = riskEngine.calculate("Pisang", readings)
-        val risk = riskEngine.mergeModel(ruleRisk, modelPredictor.predict("Pisang", readings))
+        val risk = riskEngine.mergeModel(ruleRisk, calibratedPrediction("Pisang", readings))
         val current = dao.getContainer(containerId) ?: return containerId
         dao.updateContainer(
             current.copy(
@@ -132,6 +136,7 @@ class FarmerRepository(context: Context) {
                 latestModelScore = risk.modelScore,
                 latestModelConfidence = risk.modelConfidence,
                 latestHoursToAction = risk.modelHoursToAction,
+                latestCalibrationSamples = risk.modelCalibrationSamples ?: onlineCalibrator.sampleCount("Pisang"),
                 latestAnalysisSource = risk.analysisSource,
                 latestStatus = risk.status,
                 latestRecommendation = risk.recommendation,
@@ -140,6 +145,33 @@ class FarmerRepository(context: Context) {
         )
         return containerId
     }
+
+    suspend fun recordFeedback(containerId: Long, label: FarmerFeedbackLabel, riskEngine: FarmerRiskEngine): String {
+        val container = dao.getContainer(containerId) ?: return "Wadah tidak ditemukan."
+        val recentReadings = dao.getRecentReadings(containerId).asReversed()
+        val rawPrediction = modelPredictor.predict(container.fruitType, recentReadings)
+            ?: return "Model V1 belum memiliki cukup data untuk menerima feedback."
+        val samples = onlineCalibrator.update(container.fruitType, rawPrediction, label)
+        val ruleRisk = riskEngine.calculate(container.fruitType, recentReadings)
+        val risk = riskEngine.mergeModel(ruleRisk, onlineCalibrator.apply(container.fruitType, rawPrediction))
+        dao.updateContainer(
+            container.copy(
+                latestRiskScore = risk.score,
+                latestModelScore = risk.modelScore,
+                latestModelConfidence = risk.modelConfidence,
+                latestHoursToAction = risk.modelHoursToAction,
+                latestCalibrationSamples = samples,
+                latestAnalysisSource = risk.analysisSource,
+                latestStatus = risk.status,
+                latestRecommendation = risk.recommendation,
+                lastError = null
+            )
+        )
+        return "Feedback ${label.displayName} tersimpan. Kalibrasi lokal ${samples} label untuk ${container.fruitType}."
+    }
+
+    private fun calibratedPrediction(fruitType: String, readings: List<FarmerSensorReadingEntity>) =
+        modelPredictor.predict(fruitType, readings)?.let { onlineCalibrator.apply(fruitType, it) }
 
     private fun serviceFor(ipAddress: String): Esp32Service {
         val normalized = ipAddress.trim()

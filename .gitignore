@@ -85,11 +85,11 @@ __pycache__/
 
 # Farmer synthetic-model review artifacts (small, human-readable outputs only).
 # Checkpoints, ONNX files, generated datasets, and converter sidecars stay ignored.
-!/outputs/farmer_model_v2_cuda/
-/outputs/farmer_model_v2_cuda/*
-!/outputs/farmer_model_v2_cuda/farmer_v2_model_report.png
-!/outputs/farmer_model_v2_cuda/farmer_v2_model_config.json
-!/outputs/farmer_model_v2_cuda/farmer_v2_model_history.json
-!/outputs/farmer_model_v2_tflite/
-/outputs/farmer_model_v2_tflite/*
-!/outputs/farmer_model_v2_tflite/farmer_v2_tflite_evaluation.json
+!/outputs/farmer_model_v1_cuda/
+/outputs/farmer_model_v1_cuda/*
+!/outputs/farmer_model_v1_cuda/farmer_model_report.png
+!/outputs/farmer_model_v1_cuda/farmer_model_config.json
+!/outputs/farmer_model_v1_cuda/farmer_model_history.json
+!/outputs/farmer_model_v1_tflite/
+/outputs/farmer_model_v1_tflite/*
+!/outputs/farmer_model_v1_tflite/farmer_tflite_evaluation.json

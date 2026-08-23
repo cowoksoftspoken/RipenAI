@@ -96,7 +96,13 @@ Response contoh `/data`:
 
 ---
 
-## 4. Logika Rekomendasi (Rule-Based, v1)
+## 4. Logika Recommender (Rule-Based Safety Path, Farmer ML V1 di Android)
+
+Firmware menjalankan rule-based safety path secara lokal agar LED dan endpoint
+tetap berguna tanpa internet. Farmer ML V1 berjalan di aplikasi Android setelah
+histori sensor ditarik; model tidak dipaksakan berjalan di ESP32 yang memiliki
+resource terbatas. Android menggabungkan rule score 75% dan sinyal model 25%
+dengan confidence floor, lalu menyimpan kalibrasi lokal dari label pemeriksaan.
 
 ```python
 # Pseudocode — dijalankan di firmware ATAU di app setelah data ditarik

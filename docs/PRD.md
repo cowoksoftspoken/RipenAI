@@ -97,7 +97,7 @@ Divalidasi lewat diskusi teknis proyek: model computer vision (CV) sebaik apa pu
 | Pengingat (reminder) | Notifikasi saat skor risiko wadah naik atau saat lama tidak dicek | Wajib (v1) |
 | Sync offline langsung ke unit IoT | HP connect langsung ke WiFi AP unit IoT saat dekat wadah, tanpa gateway/LoRa | Wajib (v1) |
 | Backup histori ke cloud | Sync opsional dari unit IoT ke server saat ada internet | Opsional (v1) |
-| Rekomendasi berbasis ML | Model prediktif dari data historis multi-wadah/multi-musim | Roadmap (v2), butuh data jangka panjang |
+| Farmer ML V1 + kalibrasi lokal | Model TFLite terlatih dari trajektori sensor sintetis yang menantang; label pemeriksaan pengguna memperbarui kalibrasi lokal secara terbatas | Wajib (v1) |
 
 ---
 
@@ -125,7 +125,7 @@ Divalidasi lewat diskusi teknis proyek: model computer vision (CV) sebaik apa pu
 |---|---|---|
 | LLM API down/lambat saat demo | Fitur pertanyaan lanjutan gagal | Fallback ke set pertanyaan default per buah, timeout dengan batas jelas (misal 3 detik) |
 | Sensor gas MQ-3 kurang presisi/butuh kalibrasi per komoditas | Rekomendasi kurang akurat | Kalibrasi manual per jenis buah saat pengujian, dokumentasikan sebagai batasan v1 |
-| Klaim "rekomendasi/prediksi" berlebihan ke juri | Kredibilitas turun saat ditanya detail teknis | Jujur posisikan sebagai rule-based recommender v1, dengan roadmap ML v2 yang jelas |
+| Klaim "rekomendasi/prediksi" berlebihan ke juri | Kredibilitas turun saat ditanya detail teknis | Jelaskan bahwa Farmer ML V1 adalah model bantu TFLite dengan data sintetis, rule engine tetap pengaman utama, dan validasi lapangan masih diperlukan |
 | Durian/buah kompleks lain dinilai tidak akurat dari foto | Ekspektasi user tidak terpenuhi | Beri disclaimer eksplisit di UI + arahkan ke sinyal non-visual (untuk mode konsumen) |
 | Baterai unit IoT habis saat demo/penyimpanan lama | Demo gagal, data terputus | Gunakan power bank/18650 dengan estimasi daya tahan yang sudah dihitung untuk durasi demo |
 

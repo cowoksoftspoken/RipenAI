@@ -7,7 +7,7 @@ RipenAI is an AI-assisted fruit inspection platform for two real-world problems:
 
 The project combines an Android application, on-device computer vision, a Cloudflare question worker, and a reproducible GPU training/evaluation pipeline.
 
-> Current delivery focus: both mode entry points are implemented. Consumer mode is the vision/question/fusion workflow; farmer mode is an offline-first multi-container sensor dashboard with transparent rules plus a clearly labeled experimental Farmer ML V2 assist.
+> Current delivery focus: both mode entry points are implemented. Consumer mode is the vision/question/fusion workflow; farmer mode is an offline-first multi-container sensor dashboard with transparent rules plus Farmer ML V1 trained on challenging synthetic sensor trajectories.
 
 ## What the app does
 
@@ -29,7 +29,8 @@ The project combines an Android application, on-device computer vision, a Cloudf
 - Keeps stale readings visible when the unit is unreachable and deduplicates history by `containerId + timestamp`.
 - Shows temperature, humidity, gas, several-days trend lines, last sync state, and a clear recommendation.
 - Calculates risk v1 locally from configured gas-rate, humidity, and temperature bands.
-- Optionally runs the Farmer ML V2 TFLite recommender on a 32-reading window trained on difficult synthetic DHT22 + MQ-3 proxy trajectories. The rule engine remains primary; the model contributes only 25% when confidence is at least 65% and can expose an estimated action horizon.
+- Runs the Farmer ML V1 TFLite recommender on a 32-reading window trained on difficult synthetic DHT22 + MQ-3 proxy trajectories. The rule engine remains primary; the model contributes only 25% when confidence is at least 65% and can expose an estimated action horizon.
+- Learns gradually from explicit farmer feedback through a bounded, local calibration layer. The base neural weights remain frozen on the phone to avoid catastrophic updates.
 - Includes local threshold-crossing/stale reminders with a six-hour cooldown and a clearly labeled demo dataset for emulator evaluation without hardware.
 
 The current farmer workflow is ready for integration testing with the real firmware in [`firmware/esp32_ripenai/`](firmware/esp32_ripenai/). Automatic Android WiFi provisioning and hardware calibration remain deployment work because they depend on the final ESP32 hardware and device permissions.
@@ -61,7 +62,7 @@ ESP32 unit per container
         +--> Local WiFi HTTP: /ping, /status, /data?since=...
         +--> FarmerRepository --> Room container + sensor history cache
         +--> FarmerRiskEngine --> transparent score + conservative merge
-        +--> FarmerRiskPredictor --> Farmer ML V2 assist (TFLite, optional)
+        +--> FarmerRiskPredictor --> Farmer ML V1 (TFLite)
         +--> dashboard, trend, recommendation, threshold-crossing reminders
 ```
 
@@ -83,7 +84,7 @@ The Worker now attaches an explicit `option_scores` array to every question. And
 
 ### How the farmer result is calculated
 
-The farmer mode does not ask an LLM to infer sensor risk. Android retrieves the newest readings from each local unit, stores them idempotently in Room, and calculates a transparent v1 score from recent gas change per hour plus average humidity and temperature. Thresholds are bundled in [`farmer_config.json`](android-app/app/src/main/assets/farmer_config.json), so they can be reviewed and calibrated without hiding values in Kotlin code. Farmer ML V2 adds a 25% assistive signal from a 32-reading window and returns risk, class probabilities, and an estimated action horizon. It was trained only on difficult synthetic DHT22/MQ-3 proxy trajectories and must not be presented as field accuracy. The result is a decision aid; the recommendation always asks the farmer to inspect the fruit before selling or consuming it. See [`docs/TECH-farmer-ml-v2.md`](docs/TECH-farmer-ml-v2.md).
+The farmer mode does not ask an LLM to infer sensor risk. Android retrieves the newest readings from each local unit, stores them idempotently in Room, and calculates a transparent rule score from recent gas change per hour plus average humidity and temperature. Thresholds are bundled in [`farmer_config.json`](android-app/app/src/main/assets/farmer_config.json), so they can be reviewed and calibrated without hiding values in Kotlin code. Farmer ML V1 adds a 25% signal from a 32-reading window and returns risk, class probabilities, and an estimated action horizon. It is trained only on difficult synthetic DHT22/MQ-3 proxy trajectories and must not be presented as field accuracy. Explicit farmer labels update a bounded per-fruit calibration layer locally; the base TFLite weights remain frozen. The result is a decision aid; the recommendation always asks the farmer to inspect the fruit before selling or consuming it. See [`docs/TECH-farmer-ml-v1.md`](docs/TECH-farmer-ml-v1.md).
 
 ### Camera behavior
 
@@ -150,6 +151,8 @@ Important Android files:
 
 - `android-app/app/src/main/java/com/ripenai/data/repository/FarmerRepository.kt` — local ESP32 sync and multi-container persistence.
 - `android-app/app/src/main/java/com/ripenai/domain/FarmerRiskEngine.kt` — configured, explainable farmer risk calculation.
+- `android-app/app/src/main/java/com/ripenai/domain/FarmerRiskPredictor.kt` — Farmer ML V1 TFLite inference and metadata validation.
+- `android-app/app/src/main/java/com/ripenai/domain/FarmerOnlineCalibrator.kt` — bounded per-fruit feedback calibration stored locally on the phone.
 - `android-app/app/src/main/java/com/ripenai/ui/FarmerViewModel.kt` — farmer polling, alerts, demo data, and dashboard state.
 - `android-app/app/src/main/java/com/ripenai/ui/screens/FarmerModeScreen.kt` — farmer dashboard, detail trend, and add-container UI.
 
@@ -239,14 +242,14 @@ $env:RIPEN_ROTTEN_HEAD_EPOCHS="3"
 $env:RIPEN_ROTTEN_FINE_EPOCHS="1"
 python scripts/train_rotten_detector_cuda.py
 
-# Farmer ML V2 recommender (synthetic only; uses CUDA PyTorch)
-python scripts/generate_farmer_synthetic_v2.py --samples 12000
-python scripts/train_farmer_model_v2_cuda.py --epochs 40
+# Farmer ML V1 recommender (synthetic bootstrap; uses CUDA PyTorch)
+python scripts/generate_farmer_synthetic.py --samples 12000
+python scripts/train_farmer_model_cuda.py --epochs 40
 python scripts/convert_farmer_onnx_to_tflite.py `
-  --input outputs/farmer_model_v2_cuda/farmer_v2_risk_cuda.onnx `
-  --output outputs/farmer_model_v2_tflite `
+  --input outputs/farmer_model_v1_cuda/farmer_risk_cuda.onnx `
+  --output outputs/farmer_model_v1_tflite `
   --feature-dim 105
-python scripts/evaluate_farmer_v2_tflite.py
+python scripts/evaluate_farmer_tflite.py
 ```
 
 The native CUDA trainer exports ONNX and the primary TFLite candidate. The rotten detector can be converted with:
@@ -257,12 +260,29 @@ python scripts/convert_onnx_to_tflite.py `
   --output outputs/rotten_detector_tf
 ```
 
-Use `scripts/analyze_model.py`, `scripts/evaluate_external.py`, `scripts/evaluate_rotten_detector.py`, and `scripts/evaluate_farmer_v2_tflite.py` to regenerate metrics and charts. Copy `outputs/farmer_model_v2_tflite/farmer_risk.tflite` and `outputs/farmer_model_v2_cuda/farmer_v2_model_config.json` into `android-app/app/src/main/assets/` as `farmer_risk.tflite` and `farmer_model_config.json`. Real, calibrated sensor logs and manual fruit-condition labels are required before making a production accuracy claim. The full V2 contract is in [`docs/TECH-farmer-ml-v2.md`](docs/TECH-farmer-ml-v2.md).
+Use `scripts/analyze_model.py`, `scripts/evaluate_external.py`, `scripts/evaluate_rotten_detector.py`, and `scripts/evaluate_farmer_tflite.py` to regenerate metrics and charts. Copy `outputs/farmer_model_v1_tflite/farmer_risk.tflite` and `outputs/farmer_model_v1_cuda/farmer_model_config.json` into `android-app/app/src/main/assets/` as `farmer_risk.tflite` and `farmer_model_config.json`. Real, calibrated sensor logs and manual fruit-condition labels are required before making a production accuracy claim. The full V1 contract is in [`docs/TECH-farmer-ml-v1.md`](docs/TECH-farmer-ml-v1.md).
 
-For a local ESP32-compatible demo without hardware:
+For a local ESP32-compatible demo without hardware, choose one of these connection paths.
+
+With the Android phone connected by USB, use ADB reverse. In the app add a wadah with IP `127.0.0.1:8080`; leave SSID empty:
 
 ```powershell
-python scripts/farmer_demo.py --fruit banana --scenario mixed_stress
+python scripts/farmer_demo.py --host 127.0.0.1 --port 8080 --fruit banana --scenario mixed_stress
+adb reverse tcp:8080 tcp:8080
+```
+
+Jika ada lebih dari satu device, tambahkan `-s <device_serial>` pada perintah ADB.
+
+For a phone and computer on the same WiFi, bind the demo to the LAN and enter the computer's IPv4 address plus port in the app (for example `192.168.18.15:8080`). The SSID must be the WiFi name currently used by the phone; allow TCP port 8080 through the Windows private-network firewall if prompted:
+
+```powershell
+python scripts/farmer_demo.py --host 0.0.0.0 --port 8080 --fruit banana --scenario mixed_stress
+ipconfig
+```
+
+To print a single payload without starting a server:
+
+```powershell
 python scripts/farmer_demo.py --once --fruit banana --scenario mixed_stress
 ```
 
@@ -290,13 +310,13 @@ Completed:
 - Cloudflare 503 fallback hardening and provider diagnostics.
 - GPU training, external banana holdout evaluation, confusion matrices, and threshold sweep.
 - Cleaner header, large camera surface, friendly splash copy, and consumer-focused settings.
-- Farmer mode: multi-container dashboard, local ESP32 sync, Room history, risk trend chart, demo data, transparent rules, Farmer ML V2 synthetic TFLite assist, action-horizon display, and threshold-crossing reminders.
+- Farmer mode V1: multi-container dashboard, local ESP32 sync, Room history, risk trend chart, demo data, transparent rules, Farmer ML V1 TFLite model, local feedback calibration, action-horizon display, and threshold-crossing reminders.
 
 Next:
 
 - Expand the visual model only when each new fruit has enough stage-balanced, license-cleared images.
 - Validate ESP32 firmware responses, sensor calibration, and WiFi auto-connect on physical hardware.
-- Replace synthetic training with calibrated DHT22/MQ-3 logs paired with manual fruit-condition labels; then compare the model against the rule baseline before changing the conservative merge weights. The synthetic V2 OOD urgent recall is intentionally only 47.6%, so field calibration is still mandatory.
+- Continue collecting calibrated DHT22/MQ-3 logs paired with manual fruit-condition labels; compare Farmer ML V1 against the rule baseline before changing the conservative merge weights. The OOD urgent recall is intentionally only 47.6%, so field calibration is still mandatory.
 - Add automated Worker integration tests and a repeatable Android screenshot/regression suite.
 - Add privacy policy, release signing, crash reporting, and production observability before public release.
 

@@ -49,7 +49,7 @@ class FarmerRiskEngineTest {
     }
 
     @Test
-    fun syntheticModelIsOnlyAWeightedAssist() {
+    fun farmerMlV1IsOnlyAWeightedAssist() {
         val ruleResult = engine.calculate(
             "Apel",
             listOf(
@@ -65,6 +65,6 @@ class FarmerRiskEngineTest {
         assertTrue((merged.score ?: 0f) > (ruleResult.score ?: 0f))
         assertTrue((merged.score ?: 1f) < 0.95f)
         assertEquals(0.95f, merged.modelScore)
-        assertTrue(merged.analysisSource.contains("sintetis"))
+        assertTrue(merged.analysisSource.contains("Farmer ML V1"))
     }
 }
