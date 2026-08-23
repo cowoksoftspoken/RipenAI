@@ -3,51 +3,60 @@
     {
       "id": "tekstur",
       "text": "Saat ditekan pelan, teksturnya bagaimana?",
-      "options": ["Keras", "Agak lunak", "Lunak"]
+      "options": ["Keras", "Agak lunak", "Lunak"],
+      "option_evidence": ["UNRIPE", "RIPE", "OVERRIPE"]
     },
     {
       "id": "warna",
       "text": "Warna kulit pisang paling mendekati?",
-      "options": ["Hijau", "Kuning-hijau", "Kuning penuh"]
+      "options": ["Hijau", "Kuning-hijau", "Kuning penuh"],
+      "option_evidence": ["UNRIPE", "RIPE", "RIPE"]
     },
     {
       "id": "bercak",
       "text": "Berapa banyak bercak cokelat di kulitnya?",
-      "options": ["Tidak ada", "Beberapa", "Banyak"]
+      "options": ["Tidak ada", "Beberapa", "Banyak"],
+      "option_evidence": ["RIPE", "RIPE", "OVERRIPE"]
     }
   ],
   "mango": [
     {
       "id": "tekstur",
       "text": "Saat ditekan pelan, teksturnya bagaimana?",
-      "options": ["Keras", "Agak lunak", "Lunak"]
+      "options": ["Keras", "Agak lunak", "Lunak"],
+      "option_evidence": ["UNRIPE", "RIPE", "OVERRIPE"]
     },
     {
       "id": "aroma",
       "text": "Aroma manis mangga tercium?",
-      "options": ["Tidak tercium", "Sedikit", "Harum"]
+      "options": ["Tidak tercium", "Sedikit", "Harum"],
+      "option_evidence": ["UNRIPE", "RIPE", "RIPE"]
     },
     {
       "id": "warna",
       "text": "Warna kulit mangga paling mendekati?",
-      "options": ["Hijau", "Kuning-hijau", "Kuning-oranye"]
+      "options": ["Hijau", "Kuning-hijau", "Kuning-oranye"],
+      "option_evidence": ["UNRIPE", "RIPE", "RIPE"]
     }
   ],
   "tomato": [
     {
       "id": "tekstur",
       "text": "Saat ditekan pelan, teksturnya bagaimana?",
-      "options": ["Keras", "Agak lunak", "Lunak"]
+      "options": ["Keras", "Agak lunak", "Lunak"],
+      "option_evidence": ["UNRIPE", "RIPE", "OVERRIPE"]
     },
     {
       "id": "warna",
       "text": "Warna kulit tomat paling mendekati?",
-      "options": ["Hijau", "Oranye", "Merah"]
+      "options": ["Hijau", "Oranye", "Merah"],
+      "option_evidence": ["UNRIPE", "RIPE", "RIPE"]
     },
     {
       "id": "kulit",
       "text": "Kondisi kulit tomat terlihat seperti apa?",
-      "options": ["Kencang", "Mulai keriput"]
+      "options": ["Kencang", "Mulai keriput"],
+      "option_evidence": ["RIPE", "OVERRIPE"]
     }
   ]
 }

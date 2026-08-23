@@ -1,23 +1,23 @@
 {
   "endpoint": "https://ripenai-question-worker.dbgaming679.workers.dev/v1/questions",
-  "started_at": "2026-08-22T15:23:43.589Z",
-  "finished_at": "2026-08-22T15:23:54.384Z",
-  "total_cases": 31,
-  "valid_cases": 27,
-  "valid_successes": 27,
+  "started_at": "2026-08-23T17:21:59.485Z",
+  "finished_at": "2026-08-23T17:22:34.026Z",
+  "total_cases": 40,
+  "valid_cases": 36,
+  "valid_successes": 36,
   "valid_contract_failures": 0,
   "invalid_protocol_successes": 3,
-  "all_successes": 31,
+  "all_successes": 40,
   "providers": {
-    "groq": 5,
-    "cloudflare": 22
+    "cloudflare": 24,
+    "rule_based_fallback": 12
   },
   "latency_ms": {
-    "min": 835,
-    "p50": 1334,
-    "p95": 2681,
-    "max": 3433,
-    "mean": 1437
+    "min": 1636,
+    "p50": 3503,
+    "p95": 6166,
+    "max": 6861,
+    "mean": 3473
   },
   "failures": []
 }

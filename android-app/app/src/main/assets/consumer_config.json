@@ -10,39 +10,5 @@
     "unripe_max": 0.25,
     "nearly_ripe_max": 0.55,
     "ripe_max": 0.82
-  },
-  "fusion_weights": {
-    "banana": {
-      "tekstur_keras": -0.12,
-      "tekstur_agak_lunak": 0.10,
-      "tekstur_lunak": 0.18,
-      "warna_hijau": -0.12,
-      "warna_kuning_hijau": 0.05,
-      "warna_kuning_penuh": 0.12,
-      "bercak_tidak_ada": -0.04,
-      "bercak_beberapa": 0.06,
-      "bercak_banyak": 0.12
-    },
-    "mango": {
-      "tekstur_keras": -0.12,
-      "tekstur_agak_lunak": 0.10,
-      "tekstur_lunak": 0.18,
-      "aroma_tidak_tercium": -0.06,
-      "aroma_sedikit": 0.06,
-      "aroma_harum": 0.14,
-      "warna_hijau": -0.10,
-      "warna_kuning_hijau": 0.05,
-      "warna_kuning_oranye": 0.12
-    },
-    "tomato": {
-      "tekstur_keras": -0.12,
-      "tekstur_agak_lunak": 0.10,
-      "tekstur_lunak": 0.16,
-      "warna_hijau": -0.14,
-      "warna_oranye": 0.06,
-      "warna_merah": 0.14,
-      "kulit_kencang": -0.04,
-      "kulit_mulai_keriput": 0.10
-    }
   }
 }

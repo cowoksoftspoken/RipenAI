@@ -135,14 +135,20 @@ fun ResultScreen(
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text("STATUS KEMATANGAN", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
-                        Text("${scan.confidence}% yakin", fontWeight = FontWeight.Bold, color = palette.first)
+                        Text(
+                            if (scan.isSafetyOverride) "Peringatan keamanan" else "${scan.displayConfidence}% konsisten",
+                            fontWeight = FontWeight.Bold,
+                            color = palette.first
+                        )
                     }
-                    LinearProgressIndicator(
-                        progress = { scan.confidence / 100f },
-                        modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
-                        color = palette.first,
-                        trackColor = Color(0xFFE2E8F0)
-                    )
+                    if (!scan.isSafetyOverride) {
+                        LinearProgressIndicator(
+                            progress = { scan.displayConfidence / 100f },
+                            modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                            color = palette.first,
+                            trackColor = Color(0xFFE2E8F0)
+                        )
+                    }
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Box(modifier = Modifier.size(52.dp).clip(CircleShape).background(palette.second), contentAlignment = Alignment.Center) {
                             Icon(if (scan.ripeness == "Terlalu Matang" || scan.ripeness == "Busuk") Icons.Default.Warning else Icons.Default.CheckCircle, contentDescription = null, tint = palette.first, modifier = Modifier.size(28.dp))

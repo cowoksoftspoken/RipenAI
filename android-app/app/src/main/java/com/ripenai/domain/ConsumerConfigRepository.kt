@@ -18,14 +18,6 @@ class ConsumerConfigRepository(private val context: Context) {
 
     private fun parse(config: JSONObject, questions: JSONObject): ConsumerConfig {
         val thresholdJson = config.optJSONObject("fusion_score_thresholds")
-        val weightsJson = config.optJSONObject("fusion_weights")
-        val weightMap = mutableMapOf<String, Map<String, Float>>()
-        weightsJson?.keys()?.forEach { fruit ->
-            val fruitWeights = weightsJson.optJSONObject(fruit) ?: JSONObject()
-            val parsed = mutableMapOf<String, Float>()
-            fruitWeights.keys().forEach { key -> parsed[key] = fruitWeights.optDouble(key, 0.0).toFloat() }
-            weightMap[fruit] = parsed
-        }
 
         val fallbackMap = mutableMapOf<String, List<DynamicQuestion>>()
         questions.keys().forEach { fruit ->
@@ -45,7 +37,6 @@ class ConsumerConfigRepository(private val context: Context) {
                 nearlyRipeMax = thresholdJson?.optDouble("nearly_ripe_max", 0.55)?.toFloat() ?: 0.55f,
                 ripeMax = thresholdJson?.optDouble("ripe_max", 0.82)?.toFloat() ?: 0.82f
             ),
-            fusionWeights = weightMap,
             fallbackQuestions = fallbackMap
         )
     }
@@ -55,17 +46,25 @@ class ConsumerConfigRepository(private val context: Context) {
         return (0 until array.length()).mapNotNull { index ->
             val item = array.optJSONObject(index) ?: return@mapNotNull null
             val options = item.optJSONArray("options") ?: return@mapNotNull null
-            val parsedOptions = (0 until options.length()).map { options.optString(it).trim() }.filter { it.isNotBlank() }
+            val parsedOptions = (0 until options.length()).map { options.optString(it).trim() }
+            val evidence = item.optJSONArray("option_evidence")?.let { evidenceJson ->
+                if (evidenceJson.length() != parsedOptions.size) return@let null
+                (0 until evidenceJson.length()).map { evidenceIndex ->
+                    runCatching {
+                        AnswerEvidence.valueOf(evidenceJson.optString(evidenceIndex).trim().uppercase())
+                    }.getOrNull()
+                }.takeIf { values -> values.all { it != null } }?.filterNotNull()
+            }
             val id = item.optString("id").trim()
             val text = item.optString("text").trim()
-            if (id.isBlank() || text.isBlank() || parsedOptions.size !in 2..4) null
-            else DynamicQuestion(id, text, parsedOptions)
+            if (id.isBlank() || text.isBlank() || parsedOptions.size !in 2..4 || parsedOptions.any { it.isBlank() }) null
+            else DynamicQuestion(id, text, parsedOptions, evidence)
         }.take(3)
     }
 
     private fun defaultQuestions(): Map<String, List<DynamicQuestion>> = mapOf(
-        "banana" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak"))),
-        "mango" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak"))),
-        "tomato" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak")))
+        "banana" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak"), listOf(AnswerEvidence.UNRIPE, AnswerEvidence.RIPE, AnswerEvidence.OVERRIPE))),
+        "mango" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak"), listOf(AnswerEvidence.UNRIPE, AnswerEvidence.RIPE, AnswerEvidence.OVERRIPE))),
+        "tomato" to listOf(DynamicQuestion("tekstur", "Saat ditekan pelan, teksturnya?", listOf("Keras", "Agak lunak", "Lunak"), listOf(AnswerEvidence.UNRIPE, AnswerEvidence.RIPE, AnswerEvidence.OVERRIPE)))
     )
 }

@@ -1,9 +1,9 @@
 {
   "source": "C:\\Users\\DELL-04-SMKKRIAN1\\Documents\\RipenAI\\outputs\\worker_analysis\\worker_stress_results.json",
-  "valid_successes_audited": 27,
+  "valid_successes_audited": 36,
   "cue_coverage": {
-    "pass": 27,
-    "total": 27,
+    "pass": 36,
+    "total": 36,
     "rate": 1
   },
   "generic_wording": {
@@ -18,78 +18,106 @@
     "cases": 0,
     "rate": 0
   },
+  "evidence_contract": {
+    "pass": 36,
+    "total": 36,
+    "rate": 1
+  },
+  "grounded_unsafe_option": {
+    "pass": 36,
+    "total": 36,
+    "rate": 1
+  },
   "by_fruit": {
     "apple": {
       "label": "apel",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "banana": {
       "label": "pisang",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "mango": {
       "label": "mangga",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "orange": {
       "label": "jeruk",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "papaya": {
       "label": "pepaya",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "pineapple": {
       "label": "nanas",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "tomato": {
       "label": "tomat",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "avocado": {
       "label": "alpukat",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     },
     "durian": {
       "label": "durian",
-      "cases": 3,
-      "cue_coverage": 3,
+      "cases": 4,
+      "cue_coverage": 4,
       "generic_wording": 0,
       "english_fruit_wording": 0,
-      "unsafe_wording": 0
+      "unsafe_wording": 0,
+      "evidence_contract": 4,
+      "grounded_unsafe_option": 4
     }
   },
   "warnings": []

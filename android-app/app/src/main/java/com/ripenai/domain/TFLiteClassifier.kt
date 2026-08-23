@@ -30,13 +30,20 @@ data class ClassificationResult(
     val isAnalysisUnavailable: Boolean = false,
     val isCvOnly: Boolean = false,
     val fusionScore: Float? = null,
+    /** Agreement strength between visual and answered evidence; not a calibrated probability. */
+    val evidenceConsistency: Int? = null,
+    /** A direct user-reported spoilage sign must bypass ripeness recommendations. */
+    val isSafetyOverride: Boolean = false,
     val analysisSource: String = "TFLite on-device",
     val disclaimer: String? = null,
     val temperature: Float? = null,
     val humidity: Float? = null,
     val gas: Float? = null,
     val gasLevel: String? = null
-)
+) {
+    val displayConfidence: Int
+        get() = evidenceConsistency ?: confidence
+}
 
 class TFLiteClassifier(private val context: Context) {
     private var interpreter: Interpreter? = null

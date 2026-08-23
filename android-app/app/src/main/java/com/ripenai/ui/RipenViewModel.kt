@@ -274,7 +274,9 @@ class RipenViewModel(application: Application) : AndroidViewModel(application) {
                 ScanHistory(
                     commodity = result.commodity,
                     ripeness = result.ripeness,
-                    confidence = result.confidence,
+                    // Riwayat menyimpan konsistensi observasi hasil fusi, bukan confidence
+                    // mentah dari model visual yang tidak setara dengan tingkat keyakinan akhir.
+                    confidence = result.displayConfidence,
                     daysEstimate = result.daysEstimate,
                     recommendation = result.recommendation,
                     imagePath = imagePath

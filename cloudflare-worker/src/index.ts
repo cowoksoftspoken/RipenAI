@@ -14,9 +14,12 @@ interface QuestionRequest {
   language?: string;
 }
 
+const answerEvidenceValues = ["UNRIPE", "RIPE", "OVERRIPE", "UNSAFE", "NEUTRAL"] as const;
+type AnswerEvidence = (typeof answerEvidenceValues)[number];
+
 interface QuestionPayload {
   fruit_type: string;
-  questions: Array<{ id: string; text: string; options: string[]; option_scores: number[] }>;
+  questions: Array<{ id: string; text: string; options: string[]; option_evidence: AnswerEvidence[] }>;
 }
 
 const questionResponseFormat = {
@@ -42,8 +45,14 @@ const questionResponseFormat = {
               maxItems: 4,
               items: { type: "string" },
             },
+            option_evidence: {
+              type: "array",
+              minItems: 2,
+              maxItems: 4,
+              items: { type: "string", enum: answerEvidenceValues },
+            },
           },
-          required: ["id", "text", "options"],
+          required: ["id", "text", "options", "option_evidence"],
         },
       },
     },
@@ -83,6 +92,9 @@ const asPercent = (value: number | undefined) => {
   );
 };
 
+const isSpoilageCandidate = (stage: string | null | undefined) =>
+  ["rotten", "busuk", "spoiled"].includes(stage?.trim().toLowerCase() ?? "");
+
 const promptFor = (input: QuestionRequest) =>
   `
 Kamu adalah pendamping pemilihan buah RipenAI. Buat pertanyaan konfirmasi dalam Bahasa Indonesia untuk memastikan tahap kematangan buah.
@@ -97,12 +109,17 @@ Minimal satu dari tiga pertanyaan wajib memakai tanda khusus tersebut. Jangan me
 Aturan:
 - keluarkan tepat 3 pertanyaan tertutup yang mudah dijawab dari pengamatan langsung;
 - setiap pertanyaan memiliki 2 sampai 4 opsi jawaban;
-  - opsi WAJIB diurutkan dari tanda paling mentah ke paling matang/terlalu matang karena Worker akan menambahkan skor kontribusi berdasarkan urutan ini;
+- setiap opsi WAJIB memiliki satu kode pada option_evidence dengan jumlah dan urutan yang sama seperti options. Kode yang sah hanya UNRIPE, RIPE, OVERRIPE, NEUTRAL, dan UNSAFE;
+- kode evidence harus menjelaskan arti opsi itu sendiri, BUKAN posisi opsinya. Urutan options boleh bebas;
+- gunakan NEUTRAL untuk jawaban yang tidak membawa bukti kematangan (contoh: "Tidak ada jamur");
+- gunakan UNSAFE hanya untuk tanda tidak aman yang nyata: jamur/bulu, lendir atau licin, kebocoran, bau busuk/menyengat, atau tidak layak konsumsi;
 - gunakan tanda yang aman: warna, tekstur luar, aroma, tangkai, atau bercak;
-- jika prediksi visual atau kandidat kedua adalah rotten, busuk, atau spoiled, satu pertanyaan WAJIB secara eksplisit memeriksa jamur/bulu, lendir atau permukaan licin, kebocoran, atau bau busuk/menyengat; jangan menyamarkan pemeriksaan keselamatan ini sebagai pertanyaan warna biasa;
+- satu pertanyaan WAJIB selalu memeriksa keamanan permukaan. Pertanyaan tersebut harus memiliki setidaknya satu opsi UNSAFE yang menyebut jamur/bulu, lendir/licin, kebocoran, atau bau busuk/menyengat secara eksplisit;
+- sedikitnya dua pertanyaan harus memiliki opsi kematangan (UNRIPE, RIPE, atau OVERRIPE) agar Android dapat menggabungkan observasi;
+- ${isSpoilageCandidate(input.cv_stage) || isSpoilageCandidate(input.top2_stage) ? "prediksi visual memiliki kandidat busuk, jadi gunakan pertanyaan keamanan yang sangat eksplisit." : "tetap tanyakan keamanan walaupun prediksi visual tidak mencurigakan."}
 - jangan meminta pengguna memotong, mencicipi, menusuk, atau merusak buah;
 - jangan memberi hasil akhir atau probabilitas, hanya pertanyaan;
-- jawab JSON valid saja dengan format {"fruit_type":"...","questions":[{"id":"...","text":"...","options":["..."]}]}.
+- jawab JSON valid saja dengan format {"fruit_type":"...","questions":[{"id":"...","text":"...","options":["..."],"option_evidence":["..."]}]}.
 `.trim();
 
 const extractJsonObject = (text: string): string | null => {
@@ -133,7 +150,10 @@ const extractJsonObject = (text: string): string | null => {
   return null;
 };
 
-const parseJson = (text: string, expectedFruit: string, safetyRequired = false): QuestionPayload | null => {
+const safetyCue = /jamur|bulu|lendir|licin|bocor|bau\s+busuk|bau\s+menyengat|tidak\s+layak|buang/i;
+const genericFruitReference = /\b(buah ini|buah tersebut|buahnya)\b/i;
+
+const parseJson = (text: string, expectedFruit: string): QuestionPayload | null => {
   const clean = text
     .trim()
     .replace(/^```(?:json)?\s*/i, "")
@@ -152,6 +172,9 @@ const parseJson = (text: string, expectedFruit: string, safetyRequired = false):
       options: Array.isArray(item?.options)
         ? item.options.map((option) => String(option).trim())
         : [],
+      option_evidence: Array.isArray(item?.option_evidence)
+        ? item.option_evidence.map((evidence) => String(evidence).trim().toUpperCase() as AnswerEvidence)
+        : [],
     }));
     const forbidden = /\b(cut|potong|cicip|mencicipi|taste|tusuk|menusuk|rusak|merusak)\b/i;
     if (
@@ -162,7 +185,10 @@ const parseJson = (text: string, expectedFruit: string, safetyRequired = false):
           item.text.length > 160 ||
           item.options.length < 2 ||
           item.options.length > 4 ||
+          item.option_evidence.length !== item.options.length ||
+          item.option_evidence.some((evidence) => !answerEvidenceValues.includes(evidence)) ||
           new Set(item.options.map((option) => option.toLowerCase())).size !== item.options.length ||
+          genericFruitReference.test([item.text, ...item.options].join(" ")) ||
           forbidden.test(item.text) ||
           item.options.some((option) => !option || option.length > 80 || forbidden.test(option)),
       )
@@ -173,63 +199,51 @@ const parseJson = (text: string, expectedFruit: string, safetyRequired = false):
       .flatMap((item) => [item.text, ...item.options])
       .join(" ");
     if (requiredCue && !requiredCue.test(allQuestionText)) return null;
-    if (safetyRequired && !/(jamur|bulu|lendir|licin|bocor|bau\s+busuk|bau\s+menyengat|tidak\s+layak|buang)/i.test(allQuestionText)) return null;
-    return { fruit_type: expectedFruit, questions: withOptionScores(questions) };
+    const hasGroundedUnsafeOption = questions.some((question) =>
+      question.option_evidence.some((evidence, index) =>
+        evidence === "UNSAFE" && safetyCue.test(question.options[index] ?? ""),
+      ),
+    );
+    const ripenessQuestionCount = questions.filter((question) =>
+      question.option_evidence.some((evidence) => evidence === "UNRIPE" || evidence === "RIPE" || evidence === "OVERRIPE"),
+    ).length;
+    if (!hasGroundedUnsafeOption || ripenessQuestionCount < 2) return null;
+    return { fruit_type: expectedFruit, questions };
   } catch {
     return null;
   }
 };
 
-const withOptionScores = (
-  questions: Array<{ id: string; text: string; options: string[] }>,
-) => questions.map((question) => ({
-  ...question,
-  // The range is intentionally bounded and symmetric. Android can audit and
-  // apply this exact value even when an LLM chooses dynamic IDs such as q1.
-  option_scores: question.options.map((_option, index) => {
-    const denominator = Math.max(question.options.length - 1, 1);
-    return Number((((index / denominator) - 0.5) * 0.18).toFixed(3));
-  }),
-}));
-
-const ruleBasedFallback = (input: QuestionRequest, safetyRequired: boolean): QuestionPayload => {
+const ruleBasedFallback = (input: QuestionRequest): QuestionPayload => {
   const fruit = fruitGuidance[input.fruit_type]?.label ?? input.fruit_type;
-  const questions = safetyRequired
-    ? [
-        {
-          id: "safety_surface",
-          text: `Apakah permukaan ${fruit} memiliki jamur atau bulu yang terlihat?`,
-          options: ["Tidak ada", "Ada sedikit di satu titik", "Ada banyak atau menyebar"],
-        },
-        {
-          id: "safety_condition",
-          text: `Bagaimana kondisi permukaan ${fruit} saat diamati tanpa menyentuh bagian yang mencurigakan?`,
-          options: ["Kering dan utuh", "Lembek atau licin", "Berlendir, bocor, atau berbau busuk"],
-        },
-        {
-          id: "ripeness_cue",
-          text: `Bagaimana warna dan bentuk ${fruit} secara keseluruhan?`,
-          options: ["Masih pucat atau hijau", "Warna mulai matang", "Sangat gelap atau banyak bercak"],
-        },
-      ]
-    : [
-        {
-          id: "colour",
-          text: `Bagaimana warna kulit ${fruit}?`,
-          options: ["Masih pucat atau hijau", "Mulai berubah", "Sudah sesuai warna matang"],
-        },
-        {
-          id: "texture",
-          text: `Bagaimana tekstur luar ${fruit} saat ditekan sangat ringan?`,
-          options: ["Keras", "Sedikit memberi", "Sangat lembek"],
-        },
-        {
-          id: "marks",
-          text: `Bagaimana kondisi bercak atau tanda pada ${fruit}?`,
-          options: ["Tidak ada", "Sedikit dan kecil", "Banyak atau melebar"],
-        },
-      ];
-  return { fruit_type: input.fruit_type.trim(), questions: withOptionScores(questions) };
+  const cues = fruitGuidance[input.fruit_type]?.cues ?? "warna kulit atau bercak";
+  return {
+    fruit_type: input.fruit_type.trim(),
+    questions: [
+      {
+        id: "ripeness_cue",
+        text: `Bagaimana ${fruit} dilihat dari ${cues}?`,
+        options: ["Masih pucat atau hijau", "Sudah menunjukkan warna matang", "Sangat gelap atau banyak bercak"],
+        option_evidence: ["UNRIPE", "RIPE", "OVERRIPE"],
+      },
+      {
+        id: "texture",
+        text: `Bagaimana tekstur luar ${fruit} saat ditekan sangat ringan?`,
+        options: ["Keras", "Sedikit memberi", "Sangat lembek"],
+        option_evidence: ["UNRIPE", "RIPE", "OVERRIPE"],
+      },
+      {
+        id: "safety_surface",
+        text: `Bagaimana keamanan permukaan ${fruit} saat diamati?`,
+        options: [
+          "Bersih, kering, dan utuh",
+          "Ada bagian lembek atau bercak, tetapi tidak licin dan tidak berbau busuk",
+          "Ada jamur atau bulu, lendir atau licin, kebocoran, atau bau busuk",
+        ],
+        option_evidence: ["NEUTRAL", "OVERRIPE", "UNSAFE"],
+      },
+    ],
+  };
 };
 
 type ProviderResult = {
@@ -265,7 +279,6 @@ const callGroq = async (
   env: Env,
   prompt: string,
   fruitType: string,
-  safetyRequired: boolean,
 ): Promise<ProviderResult> => {
   const started = Date.now();
   if (!env.GROQ_API_KEY) {
@@ -301,7 +314,7 @@ const callGroq = async (
       choices?: Array<{ message?: { content?: string } }>;
     };
     const content = body.choices?.[0]?.message?.content;
-    const payload = content ? parseJson(content, fruitType, safetyRequired) : null;
+    const payload = content ? parseJson(content, fruitType) : null;
     if (!payload) {
       console.warn(JSON.stringify({ event: "provider_parse_failure", provider: "groq" }));
       return { payload: null, failure: "invalid_model_json", latencyMs: Date.now() - started };
@@ -318,7 +331,6 @@ const callCloudflare = async (
   env: Env,
   prompt: string,
   fruitType: string,
-  safetyRequired: boolean,
 ): Promise<ProviderResult> => {
   const started = Date.now();
   try {
@@ -335,7 +347,7 @@ const callCloudflare = async (
       15_000,
     );
     const text = modelOutputToText(result);
-    const payload = text ? parseJson(text, fruitType, safetyRequired) : null;
+    const payload = text ? parseJson(text, fruitType) : null;
     if (!payload) {
       console.warn(JSON.stringify({ event: "provider_parse_failure", provider: "cloudflare" }));
       return { payload: null, failure: "invalid_model_json", latencyMs: Date.now() - started };
@@ -374,9 +386,6 @@ export default {
 
     const requestId = crypto.randomUUID();
     const prompt = promptFor(input);
-    const safetyRequired = [input.cv_stage, input.top2_stage]
-      .map((stage) => stage?.trim().toLowerCase())
-      .some((stage) => stage === "rotten" || stage === "busuk" || stage === "spoiled");
     console.log(JSON.stringify({
       event: "question_request",
       request_id: requestId,
@@ -384,7 +393,7 @@ export default {
       cv_stage: input.cv_stage ?? null,
     }));
 
-    const groq = await callGroq(env, prompt, input.fruit_type.trim(), safetyRequired);
+    const groq = await callGroq(env, prompt, input.fruit_type.trim());
     if (groq.payload) {
       return response({
         ...groq.payload,
@@ -394,13 +403,12 @@ export default {
       });
     }
 
-    let cloudflare = await callCloudflare(env, prompt, input.fruit_type.trim(), safetyRequired);
+    let cloudflare = await callCloudflare(env, prompt, input.fruit_type.trim());
     if (!cloudflare.payload && cloudflare.failure === "invalid_model_json") {
       cloudflare = await callCloudflare(
         env,
-        `${prompt}\n\nRETRY STRICT: satu pertanyaan wajib menyebut ciri khusus buah secara eksplisit, bukan "buah ini".${safetyRequired ? " Satu pertanyaan juga wajib menyebut jamur, lendir/licin, kebocoran, atau bau busuk/menyengat." : ""} Keluarkan JSON saja.`,
+        `${prompt}\n\nRETRY STRICT: satu pertanyaan wajib menyebut ciri khusus buah secara eksplisit, bukan "buah ini". Selalu sertakan pertanyaan keamanan dengan opsi UNSAFE yang menyebut jamur, lendir/licin, kebocoran, atau bau busuk/menyengat. Setiap opsi wajib memiliki option_evidence yang tepat. Keluarkan JSON saja.`,
         input.fruit_type.trim(),
-        safetyRequired,
       );
     }
     if (cloudflare.payload) {
@@ -417,7 +425,7 @@ export default {
       request_id: requestId,
       providers: { groq: groq.failure, cloudflare: cloudflare.failure },
     }));
-    const fallback = ruleBasedFallback(input, safetyRequired);
+    const fallback = ruleBasedFallback(input);
     return response({
       ...fallback,
       provider: "rule_based_fallback",

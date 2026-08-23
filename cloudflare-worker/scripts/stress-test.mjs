@@ -5,8 +5,10 @@ const endpoint = process.env.QUESTION_WORKER_URL ||
   "https://ripenai-question-worker.dbgaming679.workers.dev/v1/questions";
 const outputDir = resolve(process.cwd(), "..", "outputs", "worker_analysis");
 const fruits = ["apple", "banana", "mango", "orange", "papaya", "pineapple", "tomato", "avocado", "durian"];
-const stages = ["unripe", "ripe", "overripe"];
+const stages = ["unripe", "ripe", "overripe", "rotten"];
 const forbidden = /\b(cut|potong|cicip|mencicipi|taste|tusuk|menusuk|rusak|merusak)\b/i;
+const evidenceCodes = new Set(["UNRIPE", "RIPE", "OVERRIPE", "UNSAFE", "NEUTRAL"]);
+const safetyCue = /jamur|bulu|lendir|licin|bocor|bau\s+busuk|bau\s+menyengat|tidak\s+layak|buang/i;
 
 const validCases = fruits.flatMap((fruit) => stages.map((stage) => ({
   name: `${fruit}-${stage}`,
@@ -43,7 +45,19 @@ const validateQuestionPayload = (payload, expectedFruit) => {
     const options = Array.isArray(question.options) ? question.options : [];
     if (new Set(options.map((option) => String(option).toLowerCase())).size !== options.length) errors.push("duplicate_options");
     if (options.some((option) => !String(option).trim() || String(option).length > 80 || forbidden.test(String(option)))) errors.push("unsafe_option");
+    if (!Array.isArray(question.option_evidence) || question.option_evidence.length !== options.length) errors.push("invalid_option_evidence");
+    if (Array.isArray(question.option_evidence) && question.option_evidence.some((evidence) => !evidenceCodes.has(evidence))) errors.push("unknown_option_evidence");
   }
+  const hasUnsafeOption = questions.some((question) =>
+    Array.isArray(question.option_evidence) && question.option_evidence.some((evidence, index) =>
+      evidence === "UNSAFE" && safetyCue.test(String(question.options?.[index] ?? "")),
+    ),
+  );
+  const ripenessQuestionCount = questions.filter((question) =>
+    Array.isArray(question.option_evidence) && question.option_evidence.some((evidence) => ["UNRIPE", "RIPE", "OVERRIPE"].includes(evidence)),
+  ).length;
+  if (!hasUnsafeOption) errors.push("missing_grounded_unsafe_option");
+  if (ripenessQuestionCount < 2) errors.push("insufficient_ripeness_evidence");
   return [...new Set(errors)];
 };
 

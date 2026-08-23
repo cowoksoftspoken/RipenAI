@@ -3,67 +3,105 @@
     "name": "apple-unripe",
     "fruit": "apple",
     "stage": "unripe",
-    "provider": "groq",
+    "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "apple-ripe",
     "fruit": "apple",
     "stage": "ripe",
-    "provider": "groq",
+    "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "apple-overripe",
     "fruit": "apple",
-    "stage": "overripe",
-    "provider": "groq",
-    "cue_present": true,
-    "generic_wording": false,
-    "english_fruit_wording": false,
-    "unsafe_wording": false,
-    "question_count": 3
-  },
-  {
-    "name": "banana-unripe",
-    "fruit": "banana",
-    "stage": "unripe",
-    "provider": "groq",
-    "cue_present": true,
-    "generic_wording": false,
-    "english_fruit_wording": false,
-    "unsafe_wording": false,
-    "question_count": 3
-  },
-  {
-    "name": "banana-ripe",
-    "fruit": "banana",
-    "stage": "ripe",
-    "provider": "groq",
-    "cue_present": true,
-    "generic_wording": false,
-    "english_fruit_wording": false,
-    "unsafe_wording": false,
-    "question_count": 3
-  },
-  {
-    "name": "banana-overripe",
-    "fruit": "banana",
     "stage": "overripe",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "apple-rotten",
+    "fruit": "apple",
+    "stage": "rotten",
+    "provider": "cloudflare",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "banana-unripe",
+    "fruit": "banana",
+    "stage": "unripe",
+    "provider": "cloudflare",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "banana-ripe",
+    "fruit": "banana",
+    "stage": "ripe",
+    "provider": "cloudflare",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "banana-overripe",
+    "fruit": "banana",
+    "stage": "overripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "banana-rotten",
+    "fruit": "banana",
+    "stage": "rotten",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "mango-unripe",
@@ -74,7 +112,9 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "mango-ripe",
@@ -85,18 +125,35 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "mango-overripe",
     "fruit": "mango",
     "stage": "overripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "mango-rotten",
+    "fruit": "mango",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "orange-unripe",
@@ -107,7 +164,9 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "orange-ripe",
@@ -118,7 +177,9 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "orange-overripe",
@@ -129,18 +190,35 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
-    "name": "papaya-unripe",
-    "fruit": "papaya",
-    "stage": "unripe",
+    "name": "orange-rotten",
+    "fruit": "orange",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "papaya-unripe",
+    "fruit": "papaya",
+    "stage": "unripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "papaya-ripe",
@@ -151,18 +229,35 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "papaya-overripe",
     "fruit": "papaya",
     "stage": "overripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "papaya-rotten",
+    "fruit": "papaya",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "pineapple-unripe",
@@ -173,40 +268,61 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "pineapple-ripe",
     "fruit": "pineapple",
     "stage": "ripe",
-    "provider": "cloudflare",
+    "provider": "rule_based_fallback",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "pineapple-overripe",
     "fruit": "pineapple",
     "stage": "overripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "pineapple-rotten",
+    "fruit": "pineapple",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "tomato-unripe",
     "fruit": "tomato",
     "stage": "unripe",
-    "provider": "cloudflare",
+    "provider": "rule_based_fallback",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "tomato-ripe",
@@ -217,7 +333,9 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "tomato-overripe",
@@ -228,18 +346,35 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
-    "name": "avocado-unripe",
-    "fruit": "avocado",
-    "stage": "unripe",
+    "name": "tomato-rotten",
+    "fruit": "tomato",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "avocado-unripe",
+    "fruit": "avocado",
+    "stage": "unripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "avocado-ripe",
@@ -250,18 +385,35 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "avocado-overripe",
     "fruit": "avocado",
     "stage": "overripe",
-    "provider": "cloudflare",
+    "provider": "rule_based_fallback",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "avocado-rotten",
+    "fruit": "avocado",
+    "stage": "rotten",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "durian-unripe",
@@ -272,7 +424,9 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "durian-ripe",
@@ -283,17 +437,34 @@
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   },
   {
     "name": "durian-overripe",
     "fruit": "durian",
     "stage": "overripe",
+    "provider": "rule_based_fallback",
+    "cue_present": true,
+    "generic_wording": false,
+    "english_fruit_wording": false,
+    "unsafe_wording": false,
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
+  },
+  {
+    "name": "durian-rotten",
+    "fruit": "durian",
+    "stage": "rotten",
     "provider": "cloudflare",
     "cue_present": true,
     "generic_wording": false,
     "english_fruit_wording": false,
     "unsafe_wording": false,
-    "question_count": 3
+    "question_count": 3,
+    "evidence_contract": true,
+    "grounded_unsafe_option": true
   }
 ]

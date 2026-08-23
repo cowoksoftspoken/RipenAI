@@ -74,13 +74,13 @@ The consumer flow does not use the language model as a hidden final classifier:
 
 1. The selected gallery or camera bitmap is classified on-device by the primary TFLite model and the visible-spoilage detector.
 2. The Worker receives the visual stage, confidence, and second candidate, then returns exactly three confirmation questions.
-3. The final result is blocked until every question is answered. Android then calculates the fusion score locally:
+3. The final result is blocked until every question is answered. Android then combines the visual stage position with explicit answer evidence locally. Visual confidence only determines the visual weight; it never moves a fruit toward a riper or less-ripe class by itself.
 
-   `score = clamp(base stage score + CV confidence contribution + answer contribution, 0, 1)`
+   `ripeness score = weighted mean(visual stage position, answered UNRIPE/RIPE/OVERRIPE evidence)`
 
-   The displayed confidence combines 65% visual confidence and 35% fusion score. Rotten signals remain safety-preserving and produce a do-not-consume recommendation.
+   The app separately displays *evidence consistency*: visual confidence, answer coverage, agreement between answers, and agreement between visual and manual observations. It is not a calibrated probability or food-safety guarantee.
 
-The Worker now attaches an explicit `option_scores` array to every question. Android applies those scores even when the LLM uses dynamic IDs such as `q1`, `q2`, and `q3`; the older position-based calculation remains only as a compatibility fallback for responses from an older Worker deployment.
+The Worker attaches an explicit `option_evidence` code to every option: `UNRIPE`, `RIPE`, `OVERRIPE`, `NEUTRAL`, or `UNSAFE`. The option order has no mathematical meaning. Every response includes a safety question; a user-reported `UNSAFE` sign such as mold, slime, leakage, or a rotten smell deterministically produces `Busuk` and a do-not-consume recommendation, even when the primary CV stage was not `rotten`.
 
 ### How the farmer result is calculated
 

@@ -10,7 +10,7 @@ npm run typecheck
 npm run dev
 ```
 
-Endpoint aplikasi: `POST /v1/questions`. Setiap pertanyaan juga mengembalikan `option_scores` yang selaras dengan urutan opsi dari kurang matang ke lebih matang. Android memakai nilai ini saat melakukan fusion, sehingga ID dinamis seperti `q1` tetap dikalkulasikan secara eksplisit. Untuk emulator Android saat development, build dengan:
+Endpoint aplikasi: `POST /v1/questions`. Setiap opsi mengembalikan `option_evidence` yang eksplisit: `UNRIPE`, `RIPE`, `OVERRIPE`, `NEUTRAL`, atau `UNSAFE`. Android tidak pernah menebak evidence dari urutan opsi. Worker selalu menyertakan satu pertanyaan keamanan; evidence `UNSAFE` untuk jamur, lendir/licin, kebocoran, atau bau busuk menghasilkan peringatan Busuk yang tidak boleh diturunkan oleh bukti kematangan lain. Untuk emulator Android saat development, build dengan:
 
 ```powershell
 cd ..\android-app

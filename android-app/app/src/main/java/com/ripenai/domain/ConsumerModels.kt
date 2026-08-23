@@ -6,17 +6,30 @@ enum class QuestionSource {
     NONE
 }
 
+/**
+ * Meaning attached to an answer option by the Worker. The app deliberately
+ * does not infer this from an option's position: "Tidak ada jamur" is neutral,
+ * while "Ada jamur" is a safety signal even when both happen to be last/first.
+ */
+enum class AnswerEvidence {
+    UNRIPE,
+    RIPE,
+    OVERRIPE,
+    UNSAFE,
+    NEUTRAL
+}
+
 data class DynamicQuestion(
     val id: String,
     val text: String,
     val options: List<String>,
-    /** Explicit contribution per option, supplied by the Worker scoring contract. */
-    val optionScores: List<Float>? = null
+    /** Explicit semantic evidence per option, supplied by the Worker contract. */
+    val optionEvidence: List<AnswerEvidence>? = null
 ) {
-    fun scoreFor(option: String): Float? {
-        if (optionScores?.size != options.size) return null
+    fun evidenceFor(option: String): AnswerEvidence? {
+        if (optionEvidence?.size != options.size) return null
         val index = options.indexOf(option)
-        return if (index >= 0) optionScores?.getOrNull(index) else null
+        return if (index >= 0) optionEvidence?.getOrNull(index) else null
     }
 }
 
@@ -47,6 +60,5 @@ data class ConsumerConfig(
     val requireOnlineQuestions: Boolean = true,
     val requireQuestions: Boolean = true,
     val fusionThresholds: FusionThresholds = FusionThresholds(),
-    val fusionWeights: Map<String, Map<String, Float>> = emptyMap(),
     val fallbackQuestions: Map<String, List<DynamicQuestion>> = emptyMap()
 )
