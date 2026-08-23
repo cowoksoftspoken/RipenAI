@@ -152,7 +152,7 @@ The validated training machine used an NVIDIA GeForce MX450 with PyTorch CUDA an
 cd android-app
 .\gradlew.bat :app:testDebugUnitTest --no-daemon
 .\gradlew.bat :app:assembleDebug --no-daemon `
-  -PQUESTION_API_URL="https://ripenai-question-worker.dbgaming679.workers.dev/v1/questions"
+  -PQUESTION_API_URL="https://yourwoker.workers.dev/v1/questions"
 ```
 
 The debug APK is generated at:
