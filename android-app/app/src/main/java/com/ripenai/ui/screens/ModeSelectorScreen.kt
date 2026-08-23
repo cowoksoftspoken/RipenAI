@@ -59,7 +59,7 @@ fun ModeSelectorScreen(
         Spacer(modifier = Modifier.height(14.dp))
         ModeCard(
             title = "Mode Petani",
-            subtitle = "Pantau kebun dan sensor IoT",
+            subtitle = "Pantau kondisi wadah & sensor IoT",
             icon = Icons.Default.Agriculture,
             primary = false,
             onClick = { onModeSelected(AppMode.FARMER) }

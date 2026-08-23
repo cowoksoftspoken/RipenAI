@@ -1,11 +1,15 @@
 package com.ripenai
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.compose.animation.Crossfade
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ripenai.ui.RipenViewModel
+import com.ripenai.ui.FarmerViewModel
 import com.ripenai.ui.screens.AppMode
 import com.ripenai.ui.screens.FarmerModeScreen
 import com.ripenai.ui.screens.ConsumerSettingsScreen
@@ -59,20 +64,21 @@ enum class NavigationTab { SCAN, HISTORY, SETTINGS }
 
 class MainActivity : ComponentActivity() {
     private val viewModel: RipenViewModel by viewModels()
+    private val farmerViewModel: FarmerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                RipenApp(viewModel)
+                RipenApp(viewModel, farmerViewModel)
             }
         }
     }
 }
 
 @Composable
-private fun RipenApp(viewModel: RipenViewModel) {
+private fun RipenApp(viewModel: RipenViewModel, farmerViewModel: FarmerViewModel) {
     var mode by remember { mutableStateOf<AppMode?>(null) }
     var showSplash by remember { mutableStateOf(true) }
     var phraseIndex by remember { mutableStateOf(0) }
@@ -90,13 +96,30 @@ private fun RipenApp(viewModel: RipenViewModel) {
             null -> ModeSelectorScreen(onModeSelected = { mode = it })
             AppMode.FARMER -> {
                 DisposableEffect(Unit) {
-                    viewModel.startPolling()
-                    onDispose { viewModel.stopPolling() }
+                    farmerViewModel.startPolling()
+                    onDispose { farmerViewModel.stopPolling() }
                 }
-                FarmerModeScreen(viewModel = viewModel, onBack = { mode = null })
+                FarmerNotificationPermissionEffect()
+                FarmerModeScreen(viewModel = farmerViewModel, onBack = { farmerViewModel.backToDashboard(); mode = null })
             }
             AppMode.CONSUMER -> ConsumerApp(viewModel = viewModel, onSwitchMode = { viewModel.resetScan(); mode = null })
         }
+    }
+}
+
+@Composable
+private fun FarmerNotificationPermissionEffect() {
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { }
+    LaunchedEffect(Unit) {
+        val permissions = buildList {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                add(Manifest.permission.POST_NOTIFICATIONS)
+                add(Manifest.permission.NEARBY_WIFI_DEVICES)
+            } else {
+                add(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+        launcher.launch(permissions.toTypedArray())
     }
 }
 

@@ -78,7 +78,17 @@ class RipenRepository(private val context: Context) {
     }
 
     suspend fun getSensorData(): SensorData {
-        return getEsp32Service().getSensorData()
+        val status = getEsp32Service().getStatus()
+        return SensorData(
+            temperature = status.temperature ?: 0f,
+            humidity = status.humidity ?: 0f,
+            gas = status.gas ?: 0f,
+            gasLevel = when {
+                (status.gas ?: 0f) >= 300f -> "high"
+                (status.gas ?: 0f) >= 100f -> "medium"
+                else -> "low"
+            }
+        )
     }
 
     suspend fun controlLed(ripeness: String): Boolean {
