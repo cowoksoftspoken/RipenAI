@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.math.abs
 
 /** Calls the Worker only. A local question bank is retained for tests and
  * future farmer/offline flows, but consumer mode never silently uses it. */
@@ -67,10 +68,19 @@ class QuestionGenerator(private val config: ConsumerConfig) {
             val optionsJson = item.optJSONArray("options") ?: return null
             if (optionsJson.length() !in 2..4) return null
             val options = (0 until optionsJson.length()).map { optionsJson.optString(it).trim() }
+            val optionScores = item.optJSONArray("option_scores")?.let { scoresJson ->
+                if (scoresJson.length() != options.size) {
+                    null
+                } else {
+                    (0 until scoresJson.length())
+                        .map { scoresJson.optDouble(it, Double.NaN).toFloat() }
+                        .takeIf { scores -> scores.all { it.isFinite() && abs(it) <= 0.25f } }
+                }
+            }
             val id = item.optString("id").trim()
             val text = item.optString("text").trim()
             if (id.isBlank() || text.isBlank() || text.length > 160 || options.any { it.isBlank() }) return null
-            DynamicQuestion(id, text, options)
+            DynamicQuestion(id, text, options, optionScores)
         }
         return QuestionResponse(
             fruitType = payload.optString("fruit_type", fruitType),

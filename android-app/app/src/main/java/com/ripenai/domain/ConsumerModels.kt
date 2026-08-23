@@ -9,8 +9,16 @@ enum class QuestionSource {
 data class DynamicQuestion(
     val id: String,
     val text: String,
-    val options: List<String>
-)
+    val options: List<String>,
+    /** Explicit contribution per option, supplied by the Worker scoring contract. */
+    val optionScores: List<Float>? = null
+) {
+    fun scoreFor(option: String): Float? {
+        if (optionScores?.size != options.size) return null
+        val index = options.indexOf(option)
+        return if (index >= 0) optionScores?.getOrNull(index) else null
+    }
+}
 
 data class QuestionResponse(
     val fruitType: String,

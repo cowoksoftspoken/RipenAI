@@ -10,7 +10,7 @@ npm run typecheck
 npm run dev
 ```
 
-Endpoint aplikasi: `POST /v1/questions`. Untuk emulator Android saat development, build dengan:
+Endpoint aplikasi: `POST /v1/questions`. Setiap pertanyaan juga mengembalikan `option_scores` yang selaras dengan urutan opsi dari kurang matang ke lebih matang. Android memakai nilai ini saat melakukan fusion, sehingga ID dinamis seperti `q1` tetap dikalkulasikan secara eksplisit. Untuk emulator Android saat development, build dengan:
 
 ```powershell
 cd ..\android-app

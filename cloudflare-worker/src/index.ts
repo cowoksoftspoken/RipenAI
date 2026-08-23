@@ -16,7 +16,7 @@ interface QuestionRequest {
 
 interface QuestionPayload {
   fruit_type: string;
-  questions: Array<{ id: string; text: string; options: string[] }>;
+  questions: Array<{ id: string; text: string; options: string[]; option_scores: number[] }>;
 }
 
 const questionResponseFormat = {
@@ -97,7 +97,7 @@ Minimal satu dari tiga pertanyaan wajib memakai tanda khusus tersebut. Jangan me
 Aturan:
 - keluarkan tepat 3 pertanyaan tertutup yang mudah dijawab dari pengamatan langsung;
 - setiap pertanyaan memiliki 2 sampai 4 opsi jawaban;
-- opsi sebisa mungkin diurutkan dari tanda paling mentah ke paling matang/terlalu matang;
+  - opsi WAJIB diurutkan dari tanda paling mentah ke paling matang/terlalu matang karena Worker akan menambahkan skor kontribusi berdasarkan urutan ini;
 - gunakan tanda yang aman: warna, tekstur luar, aroma, tangkai, atau bercak;
 - jika prediksi visual atau kandidat kedua adalah rotten, busuk, atau spoiled, satu pertanyaan WAJIB secara eksplisit memeriksa jamur/bulu, lendir atau permukaan licin, kebocoran, atau bau busuk/menyengat; jangan menyamarkan pemeriksaan keselamatan ini sebagai pertanyaan warna biasa;
 - jangan meminta pengguna memotong, mencicipi, menusuk, atau merusak buah;
@@ -174,11 +174,23 @@ const parseJson = (text: string, expectedFruit: string, safetyRequired = false):
       .join(" ");
     if (requiredCue && !requiredCue.test(allQuestionText)) return null;
     if (safetyRequired && !/(jamur|bulu|lendir|licin|bocor|bau\s+busuk|bau\s+menyengat|tidak\s+layak|buang)/i.test(allQuestionText)) return null;
-    return { fruit_type: expectedFruit, questions };
+    return { fruit_type: expectedFruit, questions: withOptionScores(questions) };
   } catch {
     return null;
   }
 };
+
+const withOptionScores = (
+  questions: Array<{ id: string; text: string; options: string[] }>,
+) => questions.map((question) => ({
+  ...question,
+  // The range is intentionally bounded and symmetric. Android can audit and
+  // apply this exact value even when an LLM chooses dynamic IDs such as q1.
+  option_scores: question.options.map((_option, index) => {
+    const denominator = Math.max(question.options.length - 1, 1);
+    return Number((((index / denominator) - 0.5) * 0.18).toFixed(3));
+  }),
+}));
 
 const ruleBasedFallback = (input: QuestionRequest, safetyRequired: boolean): QuestionPayload => {
   const fruit = fruitGuidance[input.fruit_type]?.label ?? input.fruit_type;
@@ -217,7 +229,7 @@ const ruleBasedFallback = (input: QuestionRequest, safetyRequired: boolean): Que
           options: ["Tidak ada", "Sedikit dan kecil", "Banyak atau melebar"],
         },
       ];
-  return { fruit_type: input.fruit_type.trim(), questions };
+  return { fruit_type: input.fruit_type.trim(), questions: withOptionScores(questions) };
 };
 
 type ProviderResult = {

@@ -65,7 +65,7 @@ The consumer flow does not use the language model as a hidden final classifier:
 
    The displayed confidence combines 65% visual confidence and 35% fusion score. Rotten signals remain safety-preserving and produce a do-not-consume recommendation.
 
-Remote question options are ordered from less ripe to more ripe by the Worker contract. If a generated question ID has no fruit-specific weight entry, the Android fusion engine still applies a transparent position-based contribution instead of discarding the answer. This keeps the flow functional while leaving room for future per-fruit calibration.
+The Worker now attaches an explicit `option_scores` array to every question. Android applies those scores even when the LLM uses dynamic IDs such as `q1`, `q2`, and `q3`; the older position-based calculation remains only as a compatibility fallback for responses from an older Worker deployment.
 
 ### Camera behavior
 

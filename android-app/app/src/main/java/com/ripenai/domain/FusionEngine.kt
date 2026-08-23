@@ -23,8 +23,12 @@ class FusionEngine(private val config: ConsumerConfig) {
         val cvContribution = (cvResult.confidence / 100f - 0.5f) * 0.20f
         val weights = config.fusionWeights[cvResult.rawCommodity].orEmpty()
         val answerContribution = answers.entries.sumOf { (questionId, option) ->
-            weights["${questionId}_${option.toSnakeCase()}"]?.toDouble()
-                ?: questions.firstOrNull { it.id == questionId }?.let { question -> ordinalContribution(question, option).toDouble() }
+            questions.firstOrNull { it.id == questionId }?.let { question ->
+                question.scoreFor(option)?.toDouble()
+                    ?: weights["${questionId}_${option.toSnakeCase()}"]?.toDouble()
+                    ?: ordinalContribution(question, option).toDouble()
+            }
+                ?: weights["${questionId}_${option.toSnakeCase()}"]?.toDouble()
                 ?: 0.0
         }.toFloat()
         val score = (baseScore + cvContribution + answerContribution).coerceIn(0f, 1f)
@@ -56,7 +60,10 @@ class FusionEngine(private val config: ConsumerConfig) {
         questions: List<DynamicQuestion>,
         questionSource: QuestionSource
     ): ClassificationResult {
-        val total = questions.sumOf { question -> ordinalContribution(question, answers[question.id]).toDouble() }.toFloat()
+        val total = questions.sumOf { question ->
+            val answer = answers[question.id]
+            (question.scoreFor(answer.orEmpty()) ?: ordinalContribution(question, answer)).toDouble()
+        }.toFloat()
         val rottenSignal = answers.values.any { answer ->
             answer.lowercase().contains(Regex("busuk|jamur|bulu|berlendir|licin|bocor|bau menyengat|tidak layak"))
         }

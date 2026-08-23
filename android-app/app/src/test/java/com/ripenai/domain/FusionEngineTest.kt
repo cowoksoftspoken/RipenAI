@@ -90,4 +90,34 @@ class FusionEngineTest {
         assertEquals("rotten", result.rawStage)
         assertTrue(result.recommendation.contains("Jangan dikonsumsi"))
     }
+
+    @Test
+    fun `remote option scores are used for dynamic question ids`() {
+        val questions = listOf(
+            DynamicQuestion(
+                id = "q1",
+                text = "Bagaimana warna pisang?",
+                options = listOf("Hijau", "Kuning", "Bercak coklat"),
+                optionScores = listOf(-0.25f, 0.0f, 0.25f)
+            )
+        )
+
+        val unripe = engine.fuse(
+            cvResult = preliminary,
+            answers = mapOf("q1" to "Hijau"),
+            questionSource = QuestionSource.REMOTE,
+            questions = questions
+        )
+        val overripe = engine.fuse(
+            cvResult = preliminary,
+            answers = mapOf("q1" to "Bercak coklat"),
+            questionSource = QuestionSource.REMOTE,
+            questions = questions
+        )
+
+        assertEquals("Mentah", unripe.ripeness)
+        assertEquals("Matang", overripe.ripeness)
+        assertTrue((overripe.fusionScore ?: 0f) - (unripe.fusionScore ?: 0f) > 0.45f)
+        assertEquals("foto + pertanyaan AI", overripe.analysisSource)
+    }
 }
