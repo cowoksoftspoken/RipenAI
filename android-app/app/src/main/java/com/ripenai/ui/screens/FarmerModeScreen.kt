@@ -157,8 +157,8 @@ private fun LocalSyncCard() {
         Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Wifi, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(28.dp))
             Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text("Sinkronisasi lokal", color = FarmerNavy, fontWeight = FontWeight.Bold)
-                Text("Ponsel membaca unit ESP32 melalui WiFi wadah. Internet tidak diperlukan.", color = FarmerMuted, fontSize = 13.sp)
+                Text("Sinkronisasi wadah", color = FarmerNavy, fontWeight = FontWeight.Bold)
+                Text("ESP32 memakai WiFi wadah. Demo Ngrok memakai URL HTTPS dan internet ponsel.", color = FarmerMuted, fontSize = 13.sp)
             }
         }
     }
@@ -170,7 +170,7 @@ private fun EmptyFarmerState(onAdd: () -> Unit, onDemo: () -> Unit) {
         Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Icon(Icons.Default.Sensors, contentDescription = null, tint = FarmerGreen, modifier = Modifier.size(48.dp))
             Text("Belum ada wadah", color = FarmerNavy, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text("Tambahkan alamat unit ESP32. Untuk melihat alur dashboard tanpa unit, gunakan data contoh.", color = FarmerMuted, fontSize = 14.sp)
+            Text("Tambahkan alamat unit ESP32 atau URL demo Ngrok. Untuk melihat alur dashboard tanpa unit, gunakan data contoh.", color = FarmerMuted, fontSize = 14.sp)
             Button(onClick = onAdd, modifier = Modifier.fillMaxWidth()) { Text("Tambah wadah") }
             OutlinedButton(onClick = onDemo, modifier = Modifier.fillMaxWidth()) { Text("Lihat data contoh (demo)") }
         }
@@ -196,7 +196,7 @@ private fun ContainerSummaryCard(container: FarmerContainerEntity, onClick: () -
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(container.name, color = FarmerNavy, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Text("${container.fruitType} · ${container.ssid.ifBlank { container.ipAddress }}", color = FarmerMuted, fontSize = 13.sp)
+                    Text(containerSummarySubtitle(container), color = FarmerMuted, fontSize = 13.sp)
                 }
                 StatusPill(container.latestStatus, riskColor)
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Buka detail", tint = FarmerMuted)
@@ -225,7 +225,7 @@ private fun FarmerContainerDetail(viewModel: FarmerViewModel, container: FarmerC
                 androidx.compose.material3.IconButton(onClick = viewModel::backToDashboard) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali") }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(container.name, color = FarmerNavy, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text("${container.fruitType} · ${container.ipAddress}", color = FarmerMuted, fontSize = 13.sp)
+                    Text(containerDetailSubtitle(container), color = FarmerMuted, fontSize = 13.sp)
                 }
                 androidx.compose.material3.IconButton(onClick = { showDeleteDialog = true }) { Icon(Icons.Default.DeleteOutline, contentDescription = "Hapus wadah", tint = AttentionAmber) }
                 androidx.compose.material3.IconButton(onClick = viewModel::syncSelected, enabled = !syncing) {
@@ -326,7 +326,7 @@ private fun RiskCard(container: FarmerContainerEntity) {
                 Text("Perkiraan tindakan AI: dalam ±${hours.toInt().coerceAtLeast(0)} jam", color = FarmerMuted, fontSize = 12.sp)
             }
             if (container.latestCalibrationSamples > 0) {
-                Text("Kalibrasi lokal: ${container.latestCalibrationSamples} label ${container.fruitType}", color = FarmerMuted, fontSize = 12.sp)
+                Text("Kalibrasi lokal: ${calibrationLabel(container)}", color = FarmerMuted, fontSize = 12.sp)
             }
             Text(container.latestRecommendation, color = FarmerNavy, fontSize = 14.sp)
         }
@@ -364,7 +364,7 @@ private fun FarmerFeedbackCard(container: FarmerContainerEntity, onFeedback: (Fa
                 ) { Text("Urgent", color = UrgentRed, fontSize = 11.sp) }
             }
             if (container.latestCalibrationSamples > 0) {
-                Text("Pembelajaran lokal aktif untuk ${container.fruitType}: ${container.latestCalibrationSamples} label", color = SafeGreen, fontSize = 11.sp)
+                Text("Pembelajaran lokal aktif: ${calibrationLabel(container)}", color = SafeGreen, fontSize = 11.sp)
             }
         }
     }
@@ -422,10 +422,12 @@ private fun LegendDot(color: Color, label: String) {
 @Composable
 private fun AddContainerDialog(onDismiss: () -> Unit, onSave: (String, String, String, String) -> Unit) {
     var name by rememberSaveable { mutableStateOf("") }
-    var fruit by rememberSaveable { mutableStateOf("Pisang") }
+    var fruit by rememberSaveable { mutableStateOf("") }
     var ip by rememberSaveable { mutableStateOf("192.168.4.1") }
     var ssid by rememberSaveable { mutableStateOf("") }
-    val isLocalDemo = ip.trim().let { it == "127.0.0.1" || it.startsWith("127.0.0.1:") || it == "localhost" || it.startsWith("localhost:") }
+    val normalizedAddress = ip.trim()
+    val isLocalDemo = normalizedAddress.let { it == "127.0.0.1" || it.startsWith("127.0.0.1:") || it == "localhost" || it.startsWith("localhost:") }
+    val isRemoteDemo = normalizedAddress.startsWith("https://")
     val fruits = listOf("Pisang", "Mangga", "Apel", "Pepaya", "Jeruk", "Alpukat", "Durian", "Tomat")
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -433,18 +435,24 @@ private fun AddContainerDialog(onDismiss: () -> Unit, onSave: (String, String, S
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(name, { name = it }, label = { Text("Nama wadah") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                Text("Jenis buah", color = FarmerMuted, fontSize = 12.sp)
+                Text("Jenis buah (opsional)", color = FarmerMuted, fontSize = 12.sp)
                 Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    if (fruit.isBlank()) Button(onClick = { fruit = "" }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp)) { Text("Tidak diisi", fontSize = 12.sp) }
+                    else OutlinedButton(onClick = { fruit = "" }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp)) { Text("Tidak diisi", fontSize = 12.sp) }
                     fruits.forEach { option ->
                         if (fruit == option) Button(onClick = { fruit = option }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp)) { Text(option, fontSize = 12.sp) }
                         else OutlinedButton(onClick = { fruit = option }, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp)) { Text(option, fontSize = 12.sp) }
                     }
                 }
-                OutlinedTextField(ip, { ip = it }, label = { Text("Alamat IP unit") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Text("Pilih hanya jika kamu ingin memakai profil AI khusus buah tersebut. Tanpa pilihan, aplikasi memakai baseline umum.", color = FarmerMuted, fontSize = 12.sp)
+                OutlinedTextField(ip, { ip = it }, label = { Text("Alamat unit atau URL") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(ssid, { ssid = it }, label = { Text("SSID WiFi unit") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 Text(
-                    if (isLocalDemo) "Demo USB: SSID boleh kosong jika port sudah diteruskan dengan adb reverse."
-                    else "SSID opsional. Jika diisi, aplikasi mencoba auto-connect ke unit; IP default ESP32 biasanya 192.168.4.1.",
+                    when {
+                        isLocalDemo -> "Demo USB: SSID boleh kosong jika port sudah diteruskan dengan adb reverse."
+                        isRemoteDemo -> "Demo Ngrok: paste URL HTTPS lengkap dan kosongkan SSID. Ponsel harus memiliki akses internet."
+                        else -> "SSID opsional. Jika diisi, aplikasi mencoba auto-connect ke unit; IP default ESP32 biasanya 192.168.4.1."
+                    },
                     color = FarmerMuted,
                     fontSize = 12.sp
                 )
@@ -453,6 +461,25 @@ private fun AddContainerDialog(onDismiss: () -> Unit, onSave: (String, String, S
         confirmButton = { TextButton(onClick = { onSave(name, fruit, ip, ssid) }, enabled = name.isNotBlank() && ip.isNotBlank()) { Text("Simpan") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } }
     )
+}
+
+private fun containerSummarySubtitle(container: FarmerContainerEntity): String = listOfNotNull(
+    container.fruitType.takeIf { it.isNotBlank() },
+    container.ssid.ifBlank { container.ipAddress }
+).joinToString(" · ")
+
+private fun containerDetailSubtitle(container: FarmerContainerEntity): String = listOfNotNull(
+    container.fruitType.takeIf { it.isNotBlank() },
+    container.ipAddress
+).joinToString(" · ")
+
+private fun calibrationLabel(container: FarmerContainerEntity): String {
+    val fruit = container.fruitType.takeIf { it.isNotBlank() }
+    return if (fruit == null) {
+        "${container.latestCalibrationSamples} label"
+    } else {
+        "${container.latestCalibrationSamples} label $fruit"
+    }
 }
 
 private fun riskColor(status: String): Color = when (status) {

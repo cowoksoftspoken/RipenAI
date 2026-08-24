@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,6 +22,27 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generate_farmer_synthetic import DT_HOURS, FRUITS, OOD_SCENARIOS, TRAIN_SCENARIOS, simulate_trajectory
+
+
+def start_ngrok_tunnel(port: int, domain: str | None):
+    """Create an HTTPS tunnel without putting credentials in source control."""
+    try:
+        import ngrok
+    except ImportError as error:
+        raise RuntimeError("Mode Ngrok membutuhkan paket `ngrok`. Jalankan `python -m pip install ngrok`.") from error
+
+    if not os.getenv("NGROK_AUTHTOKEN"):
+        raise RuntimeError(
+            "NGROK_AUTHTOKEN belum diatur. Ambil token dari dashboard Ngrok lalu set sebagai environment variable sesi terminal."
+        )
+
+    options: dict[str, object] = {"authtoken_from_env": True}
+    if domain:
+        options["domain"] = domain
+    try:
+        return ngrok.forward(f"localhost:{port}", **options)
+    except Exception as error:
+        raise RuntimeError(f"Tunnel Ngrok gagal dibuat: {error}") from error
 
 
 def make_payload(fruit: str, scenario: str, seed: int) -> tuple[dict, list[dict]]:
@@ -109,6 +131,8 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20260823)
     parser.add_argument("--host", default="127.0.0.1", help="Alamat bind server; gunakan 0.0.0.0 untuk akses dari HP lewat LAN")
     parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--ngrok", action="store_true", help="Buka tunnel HTTPS publik melalui Ngrok; membutuhkan NGROK_AUTHTOKEN")
+    parser.add_argument("--ngrok-domain", help="Domain Ngrok yang sudah direservasi (opsional)")
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
     status, readings = make_payload(args.fruit, args.scenario, args.seed)
@@ -120,12 +144,26 @@ def main() -> None:
     server = ThreadingHTTPServer((args.host, args.port), DemoHandler)
     display_host = "127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host
     print(f"Demo aktif di http://{display_host}:{args.port} | bind={args.host} | buah={args.fruit} | skenario={args.scenario}")
+    tunnel = None
+    if args.ngrok:
+        try:
+            tunnel = start_ngrok_tunnel(args.port, args.ngrok_domain)
+        except RuntimeError as error:
+            server.server_close()
+            parser.error(str(error))
+        print(f"Tunnel Ngrok aktif: {tunnel.url()}")
+        print("Masukkan URL HTTPS tersebut ke Alamat unit di aplikasi dan kosongkan SSID WiFi unit.")
     print("Tekan Ctrl+C untuk berhenti.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         print("\nDemo berhenti.")
     finally:
+        if tunnel is not None:
+            try:
+                tunnel.close()
+            except Exception:
+                pass
         server.server_close()
 
 

@@ -49,6 +49,19 @@ class FarmerRiskEngineTest {
     }
 
     @Test
+    fun blankFruitTypeUsesTheGeneralSafetyBaseline() {
+        val readings = listOf(
+            FarmerSensorReadingEntity(1, 1_700_000_000_000L, 22f, 45f, 10f),
+            FarmerSensorReadingEntity(1, 1_700_003_600_000L, 22f, 45f, 11f)
+        )
+
+        val result = engine.calculate("", readings)
+
+        assertEquals("Aman", result.status)
+        assertTrue(result.analysisSource.contains("Rule-based"))
+    }
+
+    @Test
     fun farmerMlV1IsOnlyAWeightedAssist() {
         val ruleResult = engine.calculate(
             "Apel",

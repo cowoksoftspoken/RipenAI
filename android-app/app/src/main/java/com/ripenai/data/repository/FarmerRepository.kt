@@ -48,7 +48,7 @@ class FarmerRepository(context: Context) {
         return dao.insertContainer(
             FarmerContainerEntity(
                 name = name.trim(),
-                fruitType = fruitType.trim().ifBlank { "Buah" },
+                fruitType = fruitType.trim(),
                 ipAddress = ipAddress.trim(),
                 ssid = ssid.trim()
             )
@@ -102,14 +102,15 @@ class FarmerRepository(context: Context) {
                 FarmerSyncResult(true, if (freshReadings.isEmpty()) "Data sudah terbaru." else "${freshReadings.size} pembacaan disimpan.", risk, freshReadings.size)
             })
         } catch (error: Exception) {
-            dao.updateContainer(container.copy(lastError = friendlyError(error)))
-            FarmerSyncResult(false, friendlyError(error))
+            val message = friendlyError(error, container.ipAddress)
+            dao.updateContainer(container.copy(lastError = message))
+            FarmerSyncResult(false, message)
         }
     }
 
     suspend fun seedDemoContainer(riskEngine: FarmerRiskEngine): Long {
         val existing = dao.observeContainers().first().firstOrNull { it.ipAddress == DEMO_IP }
-        val containerId = existing?.id ?: addContainer("Wadah Demo", "Pisang", DEMO_IP, "RipenAI-Wadah-Demo")
+        val containerId = existing?.id ?: addContainer("Wadah Demo", "", DEMO_IP, "RipenAI-Wadah-Demo")
         val now = System.currentTimeMillis()
         val readings = (0..8).map { index ->
             FarmerSensorReadingEntity(
@@ -122,8 +123,8 @@ class FarmerRepository(context: Context) {
         }
         dao.insertReadings(readings)
         val latest = readings.last()
-        val ruleRisk = riskEngine.calculate("Pisang", readings)
-        val risk = riskEngine.mergeModel(ruleRisk, calibratedPrediction("Pisang", readings))
+        val ruleRisk = riskEngine.calculate("", readings)
+        val risk = riskEngine.mergeModel(ruleRisk, calibratedPrediction("", readings))
         val current = dao.getContainer(containerId) ?: return containerId
         dao.updateContainer(
             current.copy(
@@ -136,7 +137,7 @@ class FarmerRepository(context: Context) {
                 latestModelScore = risk.modelScore,
                 latestModelConfidence = risk.modelConfidence,
                 latestHoursToAction = risk.modelHoursToAction,
-                latestCalibrationSamples = risk.modelCalibrationSamples ?: onlineCalibrator.sampleCount("Pisang"),
+                latestCalibrationSamples = risk.modelCalibrationSamples ?: onlineCalibrator.sampleCount(""),
                 latestAnalysisSource = risk.analysisSource,
                 latestStatus = risk.status,
                 latestRecommendation = risk.recommendation,
@@ -171,16 +172,32 @@ class FarmerRepository(context: Context) {
     }
 
     private fun calibratedPrediction(fruitType: String, readings: List<FarmerSensorReadingEntity>) =
-        modelPredictor.predict(fruitType, readings)?.let { onlineCalibrator.apply(fruitType, it) }
+        fruitType.takeIf { it.isNotBlank() }
+            ?.let { modelPredictor.predict(it, readings) }
+            ?.let { onlineCalibrator.apply(fruitType, it) }
 
     private fun serviceFor(ipAddress: String): Esp32Service {
         val normalized = ipAddress.trim()
         services[normalized]?.let { return it }
+        val isNgrokEndpoint = normalized.startsWith("https://") && (
+            normalized.contains(".ngrok-free.app") ||
+                normalized.contains(".ngrok.app") ||
+                normalized.contains(".ngrok.io")
+            )
         val baseUrl = when {
             normalized.startsWith("http://") || normalized.startsWith("https://") -> if (normalized.endsWith('/')) normalized else "$normalized/"
             else -> "http://$normalized/"
         }
         val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header("User-Agent", "RipenAI-Android/2.1")
+                    .apply {
+                        if (isNgrokEndpoint) header("ngrok-skip-browser-warning", "1")
+                    }
+                    .build()
+                chain.proceed(request)
+            }
             .connectTimeout(3, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
             .writeTimeout(3, TimeUnit.SECONDS)
@@ -206,9 +223,14 @@ class FarmerRepository(context: Context) {
         return FarmerSensorReadingEntity(containerId, timestamp.takeIf { it > 0L } ?: fallbackTimestamp, temperature, humidity, gas, riskScore)
     }
 
-    private fun friendlyError(error: Exception): String {
+    private fun friendlyError(error: Exception, address: String): String {
+        val isRemoteUrl = address.trim().startsWith("https://")
         return when (error) {
-            is java.net.ConnectException, is java.net.SocketTimeoutException -> "Unit tidak terjangkau. Dekati wadah dan sambungkan WiFi unit."
+            is java.net.ConnectException, is java.net.SocketTimeoutException -> if (isRemoteUrl) {
+                "URL demo tidak terjangkau. Pastikan tunnel Ngrok dan Python demo masih aktif."
+            } else {
+                "Unit tidak terjangkau. Dekati wadah dan sambungkan WiFi unit."
+            }
             else -> "Sinkronisasi gagal: ${error.message?.take(100) ?: "respons unit tidak valid"}"
         }
     }

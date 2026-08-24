@@ -22,8 +22,8 @@ android {
     applicationId = "com.ripenai"
     minSdk = 26
     targetSdk = 34
-    versionCode = 2
-    versionName = "2.1.1"
+    versionCode = 5
+    versionName = "2.1.4"
 
     val questionApiUrl = providers.gradleProperty("QUESTION_API_URL").orNull.orEmpty()
       .replace("\\", "\\\\")

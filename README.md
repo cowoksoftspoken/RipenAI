@@ -280,6 +280,32 @@ python scripts/farmer_demo.py --host 0.0.0.0 --port 8080 --fruit banana --scenar
 ipconfig
 ```
 
+### Demo melalui Ngrok (WiFi sekolah atau jaringan terisolasi)
+
+Gunakan tunnel HTTPS jika MikroTik atau jaringan sekolah memblokir komunikasi antarperangkat. Ngrok membutuhkan akun dan authtoken, tetapi token tidak disimpan di repository.
+
+Cara termudah di Windows adalah menjalankan skrip berikut dari terminal **PowerShell** di VS Code. Skrip meminta token tanpa menampilkannya, memasang SDK bila perlu, lalu menjaga tunnel tetap hidup.
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\scripts\start_farmer_ngrok.ps1 -UseClipboardToken
+```
+
+Salin dulu authtoken dari dashboard Ngrok ke clipboard, kemudian jalankan perintah tersebut. Opsi clipboard direkomendasikan untuk terminal VS Code karena `Ctrl+V` pada prompt tersembunyi dapat terbaca sebagai karakter kontrol, bukan token. Tambahkan `-Fruit mango` atau `-Scenario warm` bila diperlukan. Terminal harus tetap terbuka selama demo dipakai.
+
+Alternatif manual:
+
+```powershell
+python -m pip install ngrok
+$secureToken = Read-Host "Ngrok authtoken" -AsSecureString
+$env:NGROK_AUTHTOKEN = [System.Net.NetworkCredential]::new('', $secureToken).Password
+python scripts/farmer_demo.py --ngrok --fruit banana --scenario mixed_stress
+```
+
+Salin URL `https://...` yang dicetak, lalu pada **Tambah wadah** masukkan URL lengkap tersebut ke **Alamat unit atau URL** dan kosongkan **SSID WiFi unit**. Tunnel hanya aktif selama proses Python berjalan.
+
+Jika akun memiliki domain Ngrok yang sudah dipesan, gunakan `--ngrok-domain nama-domain-anda.ngrok.app`.
+
 To print a single payload without starting a server:
 
 ```powershell
